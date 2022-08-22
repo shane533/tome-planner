@@ -1,15 +1,24 @@
 <template>
   <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
+  <!-- <img src="./assets/talents/absorb_life.png"> -->
+  <TalentIcon cur_level = 1 max_level = 5 :img_url = img_icon  />
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+// import HelloWorld from './components/HelloWorld.vue'
+import TalentIcon from "./components/TalentIcon.vue"
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    TalentIcon
+  },
+
+  data() {
+    return {
+      img_icon : new URL("./assets/talents/absorb_life.png", import.meta.url)
+    }
   }
 }
 </script>
