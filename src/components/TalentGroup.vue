@@ -6,7 +6,7 @@
     </div>
     <div style="clear: both;"></div>
     <ol>
-        <TalentIcon v-for="t in p_talents" :key="t.name" :p_img_url="t.img_url" :p_cur_level="t.cur_level" :p_max_level="t.max_level" />
+        <TalentIcon v-for="t in p_talents" :key="t.name" :p_name="t.name" :p_img_url="t.img_url" :p_cur_level="t.cur_level" :p_max_level="t.max_level" @click_talent="on_click_talent" />
         <div style="clear: both;"></div>
     </ol>
   </li>
@@ -23,7 +23,15 @@ export default {
         p_mastery: Number,
         p_talents: Array
     },
-    components: { TalentIcon }
+    components: { TalentIcon },
+
+    methods: {
+      on_click_talent(name)
+      {
+        console.log("TalentGroup.on_click_talent" + name)
+        this.$emit("click_talent", name, this.p_name)
+      }
+    }
 }
 </script>
 
