@@ -1,7 +1,7 @@
 <template>
-  <li class="talent_icon">
+  <li class="attr_icon">
     <img :src = p_img_url>
-    <h1>{{p_cur_level}} / {{p_max_level}}</h1>
+    <p>{{p_total}}({{p_base}}) </p>
   </li>
 </template>
 
@@ -9,10 +9,10 @@
 
 
 export default {
-  name: 'TalentIcon',
+  name: 'AttrIcon',
   props: {
-    p_cur_level: Number,
-    p_max_level: Number,
+    p_base: Number,
+    p_total: Number,
     p_img_url: String
   },
 
@@ -23,6 +23,6 @@ export default {
 <style scoped>
   li {
     list-style: none;
-    float:left;
+    /* float:left; */
   }
 </style>

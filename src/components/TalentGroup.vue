@@ -1,0 +1,58 @@
+<template>
+  <li class="talent_group">
+    <div class="title">
+        <input class="expand" type="checkbox"/>
+        <p class="name">{{p_name}} ({{p_mastery}}) </p>
+    </div>
+    <div style="clear: both;"></div>
+    <ol>
+        <TalentIcon v-for="t in p_talents" :key="t.name" :p_img_url="t.img_url" :p_cur_level="t.cur_level" :p_max_level="t.max_level" />
+        <div style="clear: both;"></div>
+    </ol>
+  </li>
+</template>
+
+<script>
+import TalentIcon from './TalentIcon.vue';
+
+
+export default {
+    name: "TalentGroup",
+    props: {
+        p_name: String,
+        p_mastery: Number,
+        p_talents: Array
+    },
+    components: { TalentIcon }
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+    .title {
+        float: left
+    }
+
+    li {
+        /* float:left; */
+        list-style: none;
+    }
+
+    p {
+        display: inline
+    }
+/* h3 {
+  margin: 40px 0 0;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+li {
+  display: inline-block;
+  margin: 0 10px;
+}
+a {
+  color: #42b983;
+} */
+</style>
