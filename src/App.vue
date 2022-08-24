@@ -1,7 +1,12 @@
 <template>
   <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
   <div class="title">
-    <h1>{{title_text}}</h1>
+    <h1>{{_T("title")}}</h1>
+    <p>{{_T("version")}}</p>
+    <select id="lang_select" v-model="lang">
+      <option value="EN_En">English</option>
+      <option value="ZH_Hans">简体中文</option>
+    </select>
   </div>
   <div class="debug">
     <h1>Debug:{{race_selected}}</h1>
@@ -28,8 +33,8 @@
       <button id="tree_points_btn">T Points</button>
       <button id="g_points_btn">G Points:{{total_g_points}}</button>
       <div class="talents_tree_panel">
-        <TalentTree :p_talents_groups="c_talents_tree" @click_talent="assign_talent_points"></TalentTree>
-        <TalentTree :p_talents_groups="g_talents_tree"></TalentTree>
+        <TalentTree :p_talents_groups="c_talents_tree" @click_talent="assign_c_talent_points"></TalentTree>
+        <TalentTree :p_talents_groups="g_talents_tree" @click_talent="assign_g_talent_points"></TalentTree>
       </div>
     </div>
   </div>
@@ -44,9 +49,10 @@
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld.vue'
 import TalentTree from "./components/TalentTree.vue"
 import AttrIcon from "./components/AttrIcon.vue"
+import lang_zh_file from "./assets/lang/ZH_Hans.json"
+import lang_en_file from "./assets/lang/EN_En.json"
 
 export default {
   name: 'App',
@@ -64,10 +70,30 @@ export default {
       this.total_attr_points -= 1
     },
 
-    assign_talent_points(id)
+    assign_c_talent_points(t, tg)
     {
-      console.log("assign_talent_points" + id)
+      console.log("assign_c_talent_points" + t + "/" + tg)
       this.total_c_points -= 1
+      this.c_talents_tree[tg].talents_list[t].cur_level += 1
+    },
+    
+    assign_g_talent_points(t, tg)
+    {
+      console.log("assign_g_talent_points" + t + "/" +tg)
+      this.total_g_points -= 1
+      this.g_talents_tree[tg].talents_list[t].cur_level += 1
+    },
+
+    change_lang(la){
+      if (la == "ZH_Hans") {
+        this.lang_file = lang_zh_file
+      } else if(la == "EN_En") {
+        this.lang_file = lang_en_file
+      }
+    },
+
+    _T(key) {
+      return this.lang_file[key]
     },
 
     reset_all(){
@@ -101,6 +127,7 @@ export default {
 
     return {
       lang : "ZH_Hans",
+      lang_file: {},
       title_text : "ToME Planner",
       desc : "testing descriptions",
 
@@ -121,6 +148,8 @@ export default {
 
       race_selected : "",
       class_selected : "",
+
+      talent_or_attr_selected : {},
 
       races : [
         {name: "Shalore"},
@@ -177,15 +206,15 @@ export default {
       ],
       talents_group : [ {name : "absorb_life",
                         img_url : new URL("./assets/talents/absorb_life.png", import.meta.url),
-                        cur_level : 1,
+                        cur_level : 0,
                         max_level : 5 },
                         {name : "acid_beam",
                         img_url : new URL("./assets/talents/acidbeam.png", import.meta.url),
-                        cur_level : 3,
+                        cur_level : 0,
                         max_level : 5 },
                         {name : "ice_wall",
                         img_url : new URL("./assets/talents/ice_wall.png", import.meta.url),
-                        cur_level : 5,
+                        cur_level : 0,
                         max_level : 5 },
                         ],
       c_talents_tree : {},
@@ -202,6 +231,11 @@ export default {
     class_selected(val) {
       console.log("select class: " + val)
       this.reset_all()
+    },
+
+    lang(val){
+      console.log("select lang: " + val)
+      this.change_lang(val)
     }
   },
 

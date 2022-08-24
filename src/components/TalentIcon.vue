@@ -11,6 +11,7 @@
 export default {
   name: 'TalentIcon',
   props: {
+    p_index: Number,
     p_name: String,
     p_cur_level: Number,
     p_max_level: Number,
@@ -19,8 +20,8 @@ export default {
 
   methods: {
     on_click_talent() {
-      console.log("TalentIcon.Click talent")
-      this.$emit("click_talent", this.p_name)
+      console.log("TalentIcon.Click talent:" + this.p_index)
+      this.$emit("click_talent", this.p_index)
     }
   }
 }

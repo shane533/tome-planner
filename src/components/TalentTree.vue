@@ -22,6 +22,7 @@ export default {
     methods : {
       on_click_talent(t_name, t_group_name) {
         console.log("TalentTree.onClickTalent" + t_name + t_group_name)
+        this.$emit("click_talent", t_name, t_group_name)
       }
     }
 }
