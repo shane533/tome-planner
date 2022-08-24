@@ -1,6 +1,6 @@
 <template>
   <li class="attr_icon">
-    <img :src = p_img_url @click="on_click_attr">
+    <img :src = p_img_url @click="on_click_attr" @mouseover="on_hover_attr">
     <p>{{p_total}}({{p_base}}) </p>
   </li>
 </template>
@@ -19,9 +19,16 @@ export default {
   },
 
   methods: {
-    on_click_attr(){
-      this.$emit("click_attr", this.p_id)
+    on_click_attr()
+    {
       console.log("Click attr button")
+      this.$emit("click_attr", this.p_id)
+    },
+
+    on_hover_attr()
+    {
+    //   console.log("hover attr button")
+      this.$emit("hover_attr", this.p_id)
     }
   }
 }

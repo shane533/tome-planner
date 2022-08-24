@@ -6,7 +6,7 @@
     </div>
     <div style="clear: both;"></div>
     <ol>
-        <TalentIcon v-for="(t, index) in p_talents" :key="t.name" :p_index="index" :p_name="t.name" :p_img_url="t.img_url" :p_cur_level="t.cur_level" :p_max_level="t.max_level" @click_talent="on_click_talent" />
+        <TalentIcon v-for="(t, index) in p_talents" :key="t.name" :p_index="index" :p_name="t.name" :p_img_url="t.img_url" :p_cur_level="t.cur_level" :p_max_level="t.max_level" @click_talent="on_click_talent" @hover_talent="on_hover_talent" />
         <div style="clear: both;"></div>
     </ol>
   </li>
@@ -30,6 +30,12 @@ export default {
       {
         console.log("TalentGroup.on_click_talent: " + name)
         this.$emit("click_talent", name, this.p_name)
+      },
+
+      on_hover_talent(index)
+      {
+        // console.log("TalentGroup.on_hover_talent: " + index)
+        this.$emit("hover_talent", index, this.p_name)
       }
     }
 }

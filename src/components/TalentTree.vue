@@ -2,7 +2,7 @@
   <div class="talent_tree">
     <!-- <p v-for="t in p_talents_groups" :key="t.name"> {{t.name}} + {{t.talents_list}}</p> -->
     <ol>
-        <TalentGroup v-for="t of p_talents_groups" :key="t.name" :p_name="t.name" :p_mastery="t.mastery" :p_talents="t.talents_list" @click_talent="on_click_talent"/> 
+        <TalentGroup v-for="t of p_talents_groups" :key="t.name" :p_name="t.name" :p_mastery="t.mastery" :p_talents="t.talents_list" @click_talent="on_click_talent" @hover_talent="on_hover_talent"/> 
     </ol>
   </div>
 </template>
@@ -23,6 +23,11 @@ export default {
       on_click_talent(t_name, t_group_name) {
         console.log("TalentTree.onClickTalent" + t_name + "/" +  t_group_name + "/" + this.p_type)
         this.$emit("click_talent", t_name, t_group_name, this.p_type)
+      },
+
+      on_hover_talent(t_name, t_group_name) {
+        // console.log("TalentTree.onHoverTalent" + t_name + "/" +  t_group_name + "/" + this.p_type)
+        this.$emit("hover_talent", t_name, t_group_name, this.p_type)
       }
     }
 }

@@ -24,7 +24,7 @@
   <div class="attr_panel">
     <button id="attr_button">Stat Points:{{total_attr_points}}</button>
     <ol>
-      <AttrIcon v-for="(a, index) in attrs" :key="a.name" :p_id="index" :p_img_url="a.img_url" :p_base="a.base" :p_total="a.total"  @click_attr="click_attr_icon"></AttrIcon>
+      <AttrIcon v-for="(a, index) in attrs" :key="a.name" :p_id="index" :p_img_url="a.img_url" :p_base="a.base" :p_total="a.total"  @click_attr="click_attr_icon" @hover_attr="hover_attr_icon"></AttrIcon>
     </ol>
   </div>
   <div class="talents_panel">
@@ -33,8 +33,8 @@
       <button id="tree_points_btn">T Points</button>
       <button id="g_points_btn">G Points:{{total_g_points}}</button>
       <div class="talents_tree_panel">
-        <TalentTree :p_type="tree_type_class" :p_talents_groups="c_talents_tree" @click_talent="click_talent_icon"></TalentTree>
-        <TalentTree :p_type="tree_type_generic" :p_talents_groups="g_talents_tree" @click_talent="click_talent_icon"></TalentTree>
+        <TalentTree :p_type="tree_type_class" :p_talents_groups="c_talents_tree" @click_talent="click_talent_icon" @hover_talent="hover_talent_icon"></TalentTree>
+        <TalentTree :p_type="tree_type_generic" :p_talents_groups="g_talents_tree" @click_talent="click_talent_icon" @hover_talent="hover_talent_icon"></TalentTree>
       </div>
     </div>
   </div>
@@ -71,13 +71,12 @@ export default {
 
     click_attr_icon(index)
     {
-      var selected_attr = this.attrs[index]
-      if (this.talent_or_attr_selected == selected_attr) {
-        this.assign_attr_points(index)
-      } else {
-        this.talent_or_attr_selected = selected_attr
-        this.update_desc_panel()
-      }
+      this.assign_attr_points(index)
+    },
+
+    hover_attr_icon(index)
+    {
+      this.talent_or_attr_selected = this.attrs[index]
     },
 
     assign_attr_points(index)
@@ -90,17 +89,17 @@ export default {
 
     click_talent_icon(t, tg, tree_type)
     {
-      console.log("C_T_I " + t + " " + tg+ " " + tree_type)
       var talent = tree_type == this.tree_type_class ? 
                                     this.c_talents_tree[tg].talents_list[t] : this.g_talents_tree[tg].talents_list[t]
-      console.log(talent)
-      console.log(this.talent_or_attr_selected)
-      if (talent == this.talent_or_attr_selected) {
-        this.assign_talent_points(tree_type, talent)
-      } else  {
-        this.talent_or_attr_selected = talent
-        this.update_desc_panel()
-      }
+
+      this.assign_talent_points(tree_type, talent)
+    },
+
+    hover_talent_icon(t, tg, tree_type)
+    {
+      var talent = tree_type == this.tree_type_class ? 
+                                    this.c_talents_tree[tg].talents_list[t] : this.g_talents_tree[tg].talents_list[t]
+      this.talent_or_attr_selected = talent
     },
 
     assign_talent_points(tree_type, talent)
@@ -109,19 +108,6 @@ export default {
       tree_type == this.tree_type_class ? this.total_c_points -=1 : this.total_g_points -= 1
       talent.cur_level += 1
     },
-    // assign_c_talent_points(t, tg)
-    // {
-    //   console.log("assign_c_talent_points" + t + "/" + tg)
-    //   this.total_c_points -= 1
-    //   this.c_talents_tree[tg].talents_list[t].cur_level += 1
-    // },
-    
-    // assign_g_talent_points(t, tg)
-    // {
-    //   console.log("assign_g_talent_points" + t + "/" +tg)
-    //   this.total_g_points -= 1
-    //   this.g_talents_tree[tg].talents_list[t].cur_level += 1
-    // },
 
     change_lang(la){
       if (la == "ZH_Hans") {
@@ -278,6 +264,10 @@ export default {
     lang(val){
       console.log("select lang: " + val)
       this.change_lang(val)
+    },
+
+    talent_or_attr_selected(){
+      this.update_desc_panel()
     }
   },
 
