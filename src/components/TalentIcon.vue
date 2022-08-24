@@ -1,7 +1,7 @@
 <template>
   <li class="talent_icon">
     <img :src = p_img_url @click="on_click_talent">
-    <h1>{{p_cur_level}} / {{p_max_level}}</h1>
+    <p>{{p_cur_level}} / {{p_max_level}}</p>
   </li>
 </template>
 
@@ -28,6 +28,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+  p {
+    margin-top:0%
+  }
+
   li {
     list-style: none;
     float:left;

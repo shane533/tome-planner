@@ -1,7 +1,20 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
+  <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
   <div class="title">
-    <p>{{title_text}}</p>
+    <h1>{{title_text}}</h1>
+  </div>
+  <div class="debug">
+    <h1>Debug:{{race_selected}}</h1>
+  </div>
+  <div class="select_panel">
+    <select id="race_select" v-model="race_selected">
+      <option disabled value="">select a race</option>
+      <option v-for="(r, index) in races" :key="index" :value="r.name.replace(' ','_').toLowerCase()">{{r.name}}</option>
+    </select>
+    <select id="class_select" v-model="class_selected">
+      <option disabled value="">select a class</option>
+      <option v-for="(c, index) in classes" :key="index" :value="c.name.replace(' ','_').toLowerCase()">{{c.name}}</option>
+    </select>
   </div>
   <div class="attr_panel">
     <button id="attr_button">Stat Points:{{total_attr_points}}</button>
@@ -15,8 +28,8 @@
       <button id="tree_points_btn">T Points</button>
       <button id="g_points_btn">G Points:{{total_g_points}}</button>
       <div class="talents_tree_panel">
-        <TalentTree :p_talents_groups="c_talents_groups" @click_talent="assign_talent_points"></TalentTree>
-        <TalentTree :p_talents_groups="g_talents_groups"></TalentTree>
+        <TalentTree :p_talents_groups="c_talents_tree" @click_talent="assign_talent_points"></TalentTree>
+        <TalentTree :p_talents_groups="g_talents_tree"></TalentTree>
       </div>
     </div>
   </div>
@@ -55,6 +68,32 @@ export default {
     {
       console.log("assign_talent_points" + id)
       this.total_c_points -= 1
+    },
+
+    reset_all(){
+
+      if (this.race_selected=="" || this.class_selected=="") {
+        return
+      }
+
+      for (var i=0; i<this.attrs.length; i++) {
+        this.attrs[i].base = 10 + this.race_config[this.race_selected]["attr_modifiers"][i]
+        this.attrs[i].total = 10 + this.race_config[this.race_selected]["attr_modifiers"][i]
+      }
+
+      this.c_talents_tree = {}
+
+      for (var ctg of this.class_config[this.class_selected]["c_talent_groups"]) {
+        var talents = this.talents_config[ctg]
+        this.c_talents_tree[ctg] = talents
+      }
+
+      this.g_talents_tree = {}
+
+      for (var gtg of this.class_config[this.class_selected]["g_talent_groups"]) {
+        talents = this.talents_config[gtg]
+        this.g_talents_tree[gtg] = talents
+      }
     }
   },
 
@@ -62,8 +101,39 @@ export default {
 
     return {
       lang : "ZH_Hans",
-      title_text : "default title",
+      title_text : "ToME Planner",
       desc : "testing descriptions",
+
+      race_config:{
+        "shalore" : {"attr_modifiers" : [2,2,-2,-2,0,0] },
+        "higher" : {"attr_modifiers" : [2,2,2,2,2,2] },
+        "cornac" : {"attr_modifiers" : [0,0,0,0,0,0] },
+      },
+
+      class_config:{
+        "archer" : {"c_talent_groups":["test0", "test1"], "g_talent_groups":["test0", "test2"]},
+        "sun_paladin" : {"c_talent_groups":["test0","test2"], "g_talent_groups":["test2"]},
+        "arcane_blade" : {"c_talent_groups":["test0", "test1", "test2"], "g_talent_groups":["test1"]},
+      },
+
+
+      talents_config:{},
+
+      race_selected : "",
+      class_selected : "",
+
+      races : [
+        {name: "Shalore"},
+        {name: "Higher"},
+        {name: "Cornac"}
+      ],
+
+      classes : [
+        {name: "Sun Paladin"},
+        {name: "Archer"},
+        {name:  "Arcane Blade"},
+      ],
+
       total_attr_points : 160,
       total_c_points : 100,
       total_g_points : 100,
@@ -118,26 +188,30 @@ export default {
                         cur_level : 5,
                         max_level : 5 },
                         ],
-      c_talents_groups : [],
-      g_talents_groups : []
+      c_talents_tree : {},
+      g_talents_tree : {}
+    }
+  },
+
+  watch: {
+    race_selected(val){
+      console.log("select race: " + val)
+      this.reset_all()
+    },
+
+    class_selected(val) {
+      console.log("select class: " + val)
+      this.reset_all()
     }
   },
 
   mounted() {
-    for (var i in [1,2,3]) {
-      this.c_talents_groups.push({
+    for (var i in [0,1,2,3]) {
+      this.talents_config["test"+i] = {
         name : "test" + i,
-        mastery : 1.0+0.1*i,
+        mastery : 1.0 + 0.1*i,
         talents_list: this.talents_group
-      })
-    }
-
-    for (i in [1,2,3]) {
-      this.g_talents_groups.push({
-        name : "test" + i,
-        mastery : 1.0+0.1*i,
-        talents_list: this.talents_group
-      })
+      }
     }
   }
 }

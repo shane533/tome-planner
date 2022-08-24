@@ -2,7 +2,7 @@
   <div class="talent_tree">
     <!-- <p v-for="t in p_talents_groups" :key="t.name"> {{t.name}} + {{t.talents_list}}</p> -->
     <ol>
-        <TalentGroup v-for="t in p_talents_groups" :key="t.name" :p_name="t.name" :p_mastery="t.mastery" :p_talents="t.talents_list" @click_talent="on_click_talent"/>
+        <TalentGroup v-for="t of p_talents_groups" :key="t.name" :p_name="t.name" :p_mastery="t.mastery" :p_talents="t.talents_list" @click_talent="on_click_talent"/>
         
     </ol>
   </div>
@@ -15,7 +15,7 @@ import TalentGroup from './TalentGroup.vue';
 export default {
     name: "TalentTree",
     props: {
-        p_talents_groups: Array
+        p_talents_groups: Object
     },
     components: { TalentGroup },
 
