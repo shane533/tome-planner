@@ -30,11 +30,11 @@
   <div class="talents_panel">
     <div class="talents_buttons_panel">
       <button id="c_points_btn">C Points:{{total_c_points}}</button>
-      <button id="tree_points_btn">T Points</button>
+      <button id="tree_points_btn">T Points:{{total_category_points}}</button>
       <button id="g_points_btn">G Points:{{total_g_points}}</button>
       <div class="talents_tree_panel">
-        <TalentTree :p_type="tree_type_class" :p_talents_groups="c_talents_tree" @click_talent="click_talent_icon" @hover_talent="hover_talent_icon"></TalentTree>
-        <TalentTree :p_type="tree_type_generic" :p_talents_groups="g_talents_tree" @click_talent="click_talent_icon" @hover_talent="hover_talent_icon"></TalentTree>
+        <TalentTree :p_type="tree_type_class" :p_talents_groups="c_talents_tree" @click_talent="click_talent_icon" @hover_talent="hover_talent_icon" @click_mastery="click_talent_mastery"></TalentTree>
+        <TalentTree :p_type="tree_type_generic" :p_talents_groups="g_talents_tree" @click_talent="click_talent_icon" @hover_talent="hover_talent_icon" @click_mastery="click_talent_mastery"></TalentTree>
       </div>
     </div>
   </div>
@@ -85,6 +85,24 @@ export default {
       this.attrs[index].base += 1
       this.attrs[index].total += 1
       this.total_attr_points -= 1
+    },
+
+    click_talent_mastery(tg, tree_type)
+    {
+
+      if (this.total_category_points > 0) {
+        var group = tree_type == this.tree_type_class ? 
+                                      this.c_talents_tree[tg] : this.g_talents_tree[tg]
+        
+        if (group.unlocked == false) {
+          group.unlocked = true
+        } else {
+          group.mastery += 0.2
+        }
+  
+        this.total_category_points -= 1
+      }
+
     },
 
     click_talent_icon(t, tg, tree_type)
@@ -191,9 +209,10 @@ export default {
         {name:  "Arcane Blade"},
       ],
 
-      total_attr_points : 160,
-      total_c_points : 100,
-      total_g_points : 100,
+      total_attr_points : 163,
+      total_c_points : 70,
+      total_g_points : 50,
+      total_category_points : 4,
       attrs : [
         {
           name : "STR",
@@ -276,6 +295,7 @@ export default {
       this.talents_config["test"+i] = {
         name : "test" + i,
         mastery : 1.0 + 0.1*i,
+        unlocked : true,
         talents_list: this.talents_group
       }
     }

@@ -1,8 +1,8 @@
 <template>
-  <li class="talent_group">
+  <li class="talent_group" :style="{'filter': 'grayscale(50%)'}">
     <div class="title">
         <input class="expand" type="checkbox"/>
-        <p class="name">{{p_name}} ({{p_mastery}}) </p>
+        <p class="name" @click="on_click_mastery">{{p_name}} ({{p_mastery}}) </p>
     </div>
     <div style="clear: both;"></div>
     <ol>
@@ -20,12 +20,20 @@ export default {
     name: "TalentGroup",
     props: {
         p_name: String,
+        p_unlocked: Boolean,
         p_mastery: Number,
         p_talents: Array
     },
     components: { TalentIcon },
 
     methods: {
+
+      on_click_mastery()
+      {
+        console.log("TalentGroup.click mastery")
+        this.$emit("click_mastery", this.p_name)
+      },
+
       on_click_talent(name)
       {
         console.log("TalentGroup.on_click_talent: " + name)
@@ -45,6 +53,10 @@ export default {
 <style scoped>
     .title {
         float: left
+    }
+
+    .mastery {
+        float :left
     }
 
     li {
