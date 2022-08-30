@@ -15,12 +15,12 @@ export default {
     p_name: String,
     p_cur_level: Number,
     p_max_level: Number,
-    p_img_url: URL
+    p_img_url: String
   },
 
   methods: {
     on_click_talent() {
-      console.log("TalentIcon.Click talent:" + this.p_name)
+      // console.log("TalentIcon.Click talent:" + this.p_name)
       this.$emit("click_talent", this.p_index)
     },
 

@@ -2,7 +2,7 @@
   <div class="talent_tree">
     <!-- <p v-for="t in p_talents_groups" :key="t.name"> {{t.name}} + {{t.talents_list}}</p> -->
     <ol>
-        <TalentGroup v-for="t of p_talents_groups" :key="t.name" :p_name="t.name" :p_mastery="t.mastery" :p_unlocked="t.unlocked" :p_talents="t.talents_list" @click_talent="on_click_talent" @hover_talent="on_hover_talent"/> 
+        <TalentGroup v-for="t of p_talents_groups" :key="t.name" :p_name="t.type" :p_mastery="t.mastery" :p_unlocked="t.unlocked" :p_talents="t.talents" @click_talent="on_click_talent" @hover_talent="on_hover_talent"/> 
     </ol>
   </div>
 </template>

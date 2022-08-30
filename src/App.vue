@@ -1,12 +1,8 @@
 <template>
   <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
   <div class="title">
-    <h1>{{_T("title")}}</h1>
-    <p>{{_T("version")}}</p>
-    <select id="lang_select" v-model="lang">
-      <option value="EN_En">English</option>
-      <option value="ZH_Hans">简体中文</option>
-    </select>
+    <h1>{{title}}</h1>
+    <p>For ToME Version: {{tome_version}}</p>
   </div>
   <div class="debug">
     <h1>Debug:{{race_selected}}</h1>
@@ -14,17 +10,17 @@
   <div class="select_panel">
     <select id="race_select" v-model="race_selected">
       <option disabled value="">select a race</option>
-      <option v-for="(r, index) in races" :key="index" :value="r.name.replace(' ','_').toLowerCase()">{{r.name}}</option>
+      <option v-for="r in race_config" :key="r.short_name" :value="r.short_name">{{r.name}}</option>
     </select>
     <select id="class_select" v-model="class_selected">
       <option disabled value="">select a class</option>
-      <option v-for="(c, index) in classes" :key="index" :value="c.name.replace(' ','_').toLowerCase()">{{c.name}}</option>
+      <option v-for="c in class_config" :key="c.short_name" :value="c.short_name">{{c.name}}</option>
     </select>
   </div>
   <div class="attr_panel">
     <button id="attr_button">Stat Points:{{total_attr_points}}</button>
     <ol>
-      <AttrIcon v-for="(a, index) in attrs" :key="a.name" :p_id="index" :p_img_url="a.img_url" :p_base="a.base" :p_total="a.total"  @click_attr="click_attr_icon" @hover_attr="hover_attr_icon"></AttrIcon>
+      <AttrIcon v-for="a in attrs" :key="a.name" :p_id="a.name.toLowerCase()" :p_img_url="a.img_url" :p_base="a.base" :p_total="a.total"  @click_attr="click_attr_icon" @hover_attr="hover_attr_icon"></AttrIcon>
     </ol>
   </div>
   <div class="talents_panel">
@@ -51,8 +47,6 @@
 <script>
 import TalentTree from "./components/TalentTree.vue"
 import AttrIcon from "./components/AttrIcon.vue"
-import lang_zh_file from "./assets/lang/ZH_Hans.json"
-import lang_en_file from "./assets/lang/EN_En.json"
 
 export default {
   name: 'App',
@@ -69,21 +63,21 @@ export default {
       console.log("update_desc_panel " + this.desc)
     },
 
-    click_attr_icon(index)
+    click_attr_icon(key)
     {
-      this.assign_attr_points(index)
+      this.assign_attr_points(key)
     },
 
-    hover_attr_icon(index)
+    hover_attr_icon(key)
     {
-      this.talent_or_attr_selected = this.attrs[index]
+      this.talent_or_attr_selected = this.attrs[key]
     },
 
-    assign_attr_points(index)
+    assign_attr_points(key)
     {
       // console.log("assign_attr_points")
-      this.attrs[index].base += 1
-      this.attrs[index].total += 1
+      this.attrs[key].base += 1
+      this.attrs[key].total += 1
       this.total_attr_points -= 1
     },
 
@@ -108,7 +102,7 @@ export default {
     click_talent_icon(t, tg, tree_type)
     {
       var talent = tree_type == this.tree_type_class ? 
-                                    this.c_talents_tree[tg].talents_list[t] : this.g_talents_tree[tg].talents_list[t]
+                                    this.c_talents_tree[tg].talents[t] : this.g_talents_tree[tg].talents[t]
 
       this.assign_talent_points(tree_type, talent)
     },
@@ -116,7 +110,7 @@ export default {
     hover_talent_icon(t, tg, tree_type)
     {
       var talent = tree_type == this.tree_type_class ? 
-                                    this.c_talents_tree[tg].talents_list[t] : this.g_talents_tree[tg].talents_list[t]
+                                    this.c_talents_tree[tg].talents[t] : this.g_talents_tree[tg].talents[t]
       this.talent_or_attr_selected = talent
     },
 
@@ -127,41 +121,71 @@ export default {
       talent.cur_level += 1
     },
 
-    change_lang(la){
-      if (la == "ZH_Hans") {
-        this.lang_file = lang_zh_file
-      } else if(la == "EN_En") {
-        this.lang_file = lang_en_file
-      }
-    },
+    // change_lang(la){
+    //   if (la == "ZH_Hans") {
+    //     this.lang_file = lang_zh_file
+    //   } else if(la == "EN_En") {
+    //     this.lang_file = lang_en_file
+    //   }
+    // },
 
-    _T(key) {
-      return this.lang_file[key]
-    },
+    // _T(key) {
+    //   return this.lang_file[key]
+    // },
 
-    reset_all(){
+    async reset_all(){
 
       if (this.race_selected=="" || this.class_selected=="") {
         return
       }
+      
+      for (var k in this.attrs) {
+        if  ("stats" in this.race_config[this.race_selected]) {
+          this.attrs[k].base = k in this.race_config[this.race_selected]["stats"] ? 10 + this.race_config[this.race_selected]["stats"][k] : 10
+          this.attrs[k].total = k in this.race_config[this.race_selected]["stats"] ? 10 + this.race_config[this.race_selected]["stats"][k] : 10
+        }
 
-      for (var i=0; i<this.attrs.length; i++) {
-        this.attrs[i].base = 10 + this.race_config[this.race_selected]["attr_modifiers"][i]
-        this.attrs[i].total = 10 + this.race_config[this.race_selected]["attr_modifiers"][i]
+        if ("stats" in this.class_config[this.class_selected]){
+          this.attrs[k].base += k in this.class_config[this.class_selected]["stats"] ? this.class_config[this.class_selected]["stats"][k] : 0
+          this.attrs[k].total += k in this.class_config[this.class_selected]["stats"] ? this.class_config[this.class_selected]["stats"][k] : 0
+        }
       }
 
       this.c_talents_tree = {}
 
-      for (var ctg of this.class_config[this.class_selected]["c_talent_groups"]) {
-        var talents = this.talents_config[ctg]
-        this.c_talents_tree[ctg] = talents
-      }
+      for (var tree of ["talents_types_class", "talents_types_generic"]) {
+        for (var ctg in this.class_config[this.class_selected][tree]) {
+          var talents = this.class_config[this.class_selected][tree][ctg]
+          var mastery = talents[1]
+          var type = ctg.split("/")[0]
+          var name = ctg.split("/")[1]
+          var t_status = {
+            "mastery" : mastery,
+            "unlocked" : talents[0]
+          }
+          await import(`@/assets/data/${this.tome_version}/talents.${type}-${mastery}.json`).then((module)=>{
+            console.log(ctg)
+            for (var i in module) {
+              if (module[i]["name"] == name) {
+                var config = { ...t_status, ...module[i]}
+                for(var t of config["talents"]) {
+                  t["cur_level"] = 0
+                  t["max_level"] = 5
+                  
+                  t["img_url"] = require("./assets/talents/"+ t["image"])
+                  // t["img_url"] = require(`./assets/talents/${t["image"]}`)
+                  // t["img_url"] = new URL(`./assets/talents/${t["image"]}`, import.meta.url)
+                }
 
-      this.g_talents_tree = {}
-
-      for (var gtg of this.class_config[this.class_selected]["g_talent_groups"]) {
-        talents = this.talents_config[gtg]
-        this.g_talents_tree[gtg] = talents
+                if (tree == "talents_types_class") {
+                  this.c_talents_tree[ctg] = config
+                } else {
+                  this.g_talents_tree[ctg] = config
+                }
+              }
+            }
+          })
+        }
       }
     }
   },
@@ -169,9 +193,8 @@ export default {
   data() {
 
     return {
-      lang : "ZH_Hans",
-      lang_file: {},
-      title_text : "ToME Planner",
+      title : "ToME Planner",
+      tome_version : "1.7.4",
       desc : "testing descriptions",
 
       tree_type_class : "class",
@@ -197,60 +220,49 @@ export default {
 
       talent_or_attr_selected : {},
 
-      races : [
-        {name: "Shalore"},
-        {name: "Higher"},
-        {name: "Cornac"}
-      ],
-
-      classes : [
-        {name: "Sun Paladin"},
-        {name: "Archer"},
-        {name:  "Arcane Blade"},
-      ],
-
       total_attr_points : 163,
       total_c_points : 70,
       total_g_points : 50,
       total_category_points : 4,
-      attrs : [
-        {
+      attrs : {
+        "str" : {
           name : "STR",
           img_url : new URL("./assets/stats/strength.png", import.meta.url),
           base : 10,
           total : 10
         },
-        {
+        "dex" : {
           name : "DEX",
           img_url : new URL("./assets/stats/dexterity.png", import.meta.url),
           base : 10,
           total : 10
         },
-        {
+        "con" : {
           name : "CON",
           img_url : new URL("./assets/stats/constitution.png", import.meta.url),
           base : 10,
           total : 10
         },
-        {
+        "mag" : {
           name : "MAG",
           img_url : new URL("./assets/stats/magic.png", import.meta.url),
           base : 10,
           total : 10
         },
-        {
+        "wil" : {
           name : "WIL",
           img_url : new URL("./assets/stats/willpower.png", import.meta.url),
           base : 10,
           total : 10
         },
-        {
+        "cun" : {
           name : "CUN",
           img_url : new URL("./assets/stats/cunning.png", import.meta.url),
           base : 10,
           total : 10
         }
-      ],
+      },
+
       talents_group : [ {name : "absorb_life",
                         img_url : new URL("./assets/talents/absorb_life.png", import.meta.url),
                         cur_level : 0,
@@ -291,6 +303,16 @@ export default {
   },
 
   mounted() {
+
+    import(`@/assets/data/${this.tome_version}/classes.json`).then((module)=>{
+      this.class_config = module["subclasses"]
+    })
+
+    import(`@/assets/data/${this.tome_version}/races.json`).then((module)=>{
+      this.race_config = module["subraces"]
+    })
+
+
     for (var i in [0,1,2,3]) {
       this.talents_config["test"+i] = {
         name : "test" + i,

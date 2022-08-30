@@ -12,7 +12,7 @@
 export default {
   name: 'AttrIcon',
   props: {
-    p_id: Number,
+    p_id: String,
     p_base: Number,
     p_total: Number,
     p_img_url: URL
