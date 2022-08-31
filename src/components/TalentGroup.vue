@@ -1,12 +1,12 @@
 <template>
   <li class="talent_group" :style="{'filter': 'grayscale(50%)'}">
     <div class="title">
-        <input class="expand" type="checkbox"/>
+        <input class="expand" type="checkbox" v-model="expanded"/>
         <button id="reset" @click="on_click_reset_button">Reset</button>
         <p class="name" @click="on_click_mastery">{{p_name}} ({{p_mastery}}) </p>
     </div>
     <div style="clear: both;"></div>
-    <ol>
+    <ol v-show="expanded">
         <TalentIcon v-for="(t, index) in p_talents" :key="t.name" :p_index="index" :p_name="t.name" :p_img_url="t.img_url" :p_cur_level="t.cur_level" :p_max_level="t.max_level" @click_talent="on_click_talent" @hover_talent="on_hover_talent" />
         <div style="clear: both;"></div>
     </ol>
@@ -26,6 +26,12 @@ export default {
         p_talents: Array
     },
     components: { TalentIcon },
+
+    data() {
+      return {
+        expanded: true
+      }
+    },
 
     methods: {
 
@@ -64,6 +70,14 @@ export default {
 
     .mastery {
         float :left
+    }
+
+    .expand {
+      background:url("../assets/stats/constitution.png")
+    }
+
+    .expand:checked {
+      background:url("../assets/stats/magic.png")
     }
 
     li {
