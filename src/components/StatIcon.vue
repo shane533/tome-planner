@@ -1,6 +1,6 @@
 <template>
-  <li class="attr_icon">
-    <img :src = p_img_url @click="on_click_attr" @mouseover="on_hover_attr">
+  <li class="stat_icon">
+    <img :src = p_img_url @click="on_click_stat" @mouseover="on_hover_stat">
     <p>{{p_total}}({{p_base}}) </p>
   </li>
 </template>
@@ -10,7 +10,7 @@
 
 
 export default {
-  name: 'AttrIcon',
+  name: 'StatIcon',
   props: {
     p_id: String,
     p_base: Number,
@@ -19,16 +19,15 @@ export default {
   },
 
   methods: {
-    on_click_attr()
+    on_click_stat()
     {
-      console.log("Click attr button")
-      this.$emit("click_attr", this.p_id)
+      console.log("Click stat button")
+      this.$emit("click_stat", this.p_id)
     },
 
-    on_hover_attr()
+    on_hover_stat()
     {
-    //   console.log("hover attr button")
-      this.$emit("hover_attr", this.p_id)
+      this.$emit("hover_stat", this.p_id)
     }
   }
 }

@@ -1,0 +1,11 @@
+export const Const = Object.freeze(
+{
+    BASE_STAT_POINT : 10,
+    TOTAL_STAT_POINTS : 160,
+    TOTAL_CLASS_POINTS : 65,
+    TOTAL_GENERIC_POINTS : 47,
+    TOTAL_CATEGORY_POINTS : 4,
+    TOTAL_PRODIGY_POINTS : 2,
+    MAX_POINTS_PER_STAT : 60,
+}
+);

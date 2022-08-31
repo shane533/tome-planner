@@ -2,6 +2,7 @@
   <li class="talent_group" :style="{'filter': 'grayscale(50%)'}">
     <div class="title">
         <input class="expand" type="checkbox"/>
+        <button id="reset" @click="on_click_reset_button">Reset</button>
         <p class="name" @click="on_click_mastery">{{p_name}} ({{p_mastery}}) </p>
     </div>
     <div style="clear: both;"></div>
@@ -32,6 +33,12 @@ export default {
       {
         console.log("TalentGroup.click mastery")
         this.$emit("click_mastery", this.p_name)
+      },
+
+      on_click_reset_button()
+      {
+        console.log("TalentGroup.click reset button" + this.p_name)
+        this.$emit("reset_talent_group", this.p_name)
       },
 
       on_click_talent(name)
