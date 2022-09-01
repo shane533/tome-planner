@@ -1,7 +1,10 @@
 <template>
   <li class="talent_group" :style="{'filter': 'grayscale(50%)'}">
     <div class="title">
-        <input class="expand" type="checkbox" v-model="expanded"/>
+        <label :for="p_name">
+          <img :src="expand_img">
+        </label>
+        <input :id="p_name" type="checkbox" style="display:none" v-model="expanded"/>
         <button id="reset" @click="on_click_reset_button">Reset</button>
         <p class="name" @click="on_click_mastery">{{p_name}} ({{p_mastery}}) </p>
     </div>
@@ -30,6 +33,13 @@ export default {
     data() {
       return {
         expanded: true
+      }
+    },
+
+    computed:
+    {
+      expand_img(){
+        return this.expanded ? require("../assets/ui/minus.png") : require("../assets/ui/plus.png")
       }
     },
 
