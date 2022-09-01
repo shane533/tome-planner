@@ -1,6 +1,8 @@
 <template>
   <li class="stat_icon">
-    <img :src = p_img_url @click="on_click_stat" @mouseover="on_hover_stat">
+    <div class="icon">
+      <img :src = p_img_url @click="on_click_stat" @mouseover="on_hover_stat">
+    </div>
     <p>{{p_total}}({{p_base}}) </p>
   </li>
 </template>
@@ -44,4 +46,11 @@ export default {
     list-style: none;
     /* float:left; */
   }
+
+  .icon {
+    border-style: solid;
+    border-width: 2px;
+    border-color: #969696;
+  }
+
 </style>

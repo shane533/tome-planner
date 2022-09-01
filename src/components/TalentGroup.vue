@@ -6,7 +6,7 @@
         </label>
         <input :id="p_name" type="checkbox" style="display:none" v-model="expanded"/>
         <button id="reset" @click="on_click_reset_button">Reset</button>
-        <p class="name" @click="on_click_mastery">{{p_name}} ({{p_mastery}}) </p>
+        <p class="name" @click="on_click_mastery">{{p_name}} ({{p_mastery.toFixed(2)}}) </p>
     </div>
     <div style="clear: both;"></div>
     <ol v-show="expanded">
