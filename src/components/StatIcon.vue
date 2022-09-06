@@ -3,7 +3,7 @@
     <div class="icon">
       <img :src = p_img_url @click="on_click_stat" @mouseover="on_hover_stat">
     </div>
-    <p>{{p_total}}({{p_base}}) </p>
+    <p :class="points_class">{{p_total}}({{p_base}}) </p>
   </li>
 </template>
 
@@ -31,6 +31,12 @@ export default {
     {
       this.$emit("hover_stat", this.p_id)
     }
+  },
+
+  computed: {
+    points_class() {
+      return this.p_base >= 60 ? "max" : "normal" 
+    }
   }
 }
 </script>
@@ -44,7 +50,16 @@ export default {
 
   li {
     list-style: none;
+    align-self: center;
     /* float:left; */
+  }
+
+  .max {
+    color: #969696;
+  }
+
+  .normal {
+    color: white;
   }
 
   .icon {

@@ -6,7 +6,7 @@
   </div>
   <div class="debug">
     <h1>Debug:{{build}}</h1>
-    <button id="share_button" @click="click_share_button">Share</button>
+    <button class="btn" id="share_button" @click="click_share_button">Share</button>
   </div>
   <div class="select_panel">
     <select id="race_select" v-model="race_selected">
@@ -19,24 +19,24 @@
     </select>
   </div>
   <div class="stat_panel">
-    <button id="stat_button">Stat Points:{{total_stat_points}}</button>
+    <button class="btn" id="stat_button">Stat:{{total_stat_points}}</button>
     <ol>
       <StatIcon v-for="a in stats" :key="a.name" :p_id="a.name.toLowerCase()" :p_img_url="a.img_url" :p_base="a.base" :p_total="a.total"  @click_stat="click_stat_icon" @hover_stat="hover_stat_icon"></StatIcon>
     </ol>
   </div>
   <div class="talents_panel">
     <div class="talents_buttons_panel">
-      <button id="c_points_btn">C Points:{{total_c_points}}</button>
-      <button id="tree_points_btn">T Points:{{total_category_points}}</button>
-      <button id="g_points_btn">G Points:{{total_g_points}}</button>
+      <button class="btn" id="c_points_btn">C Points:{{total_c_points}}</button>
+      <button class="btn" id="tree_points_btn">T Points:{{total_category_points}}</button>
+      <button class="btn" id="g_points_btn">G Points:{{total_g_points}}</button>
       <div class="talents_tree_panel">
         <TalentTree :p_type="tree_type_class" :p_talents_groups="c_talents_tree" @click_talent="click_talent_icon" @hover_talent="hover_talent_icon" @click_mastery="click_talent_mastery" @reset_talent_group="reset_talent_group"></TalentTree>
         <TalentTree :p_type="tree_type_generic" :p_talents_groups="g_talents_tree" @click_talent="click_talent_icon" @hover_talent="hover_talent_icon" @click_mastery="click_talent_mastery" @reset_talent_group="reset_talent_group"></TalentTree>
       </div>
     </div>
   </div>
-  <div class="desc_panel">
-    <p>{{desc}}</p>
+  <div class="desc_panel" v-html="desc">
+
   </div>
   <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
   <!-- <img src="./assets/talents/absorb_life.png"> -->
@@ -63,7 +63,11 @@ export default {
 
     update_desc_panel()
     {
-      this.desc = this.talent_or_stat_selected.name
+      if (this.selected_item_type == Const.ITEM_TYPE_TALENT) {
+        this.desc = this.selected_item.info_text
+      } else {
+        this.desc = this.selected_item.name
+      }
       // console.log("update_desc_panel " + this.desc)
     },
 
@@ -76,7 +80,8 @@ export default {
 
     hover_stat_icon(key)
     {
-      this.talent_or_stat_selected = this.stats[key]
+      this.selected_item = this.stats[key]
+      this.selected_item_type = Const.ITEM_TYPE_STAT
     },
 
     assign_stat_points(key)
@@ -102,7 +107,13 @@ export default {
   
         this.total_category_points -= 1
       }
+    },
 
+    hover_talent_mastery(tg, tree_type)
+    {
+      this.selected_item = tree_type == this.tree_type_class ? 
+                                      this.c_talents_tree[tg] : this.g_talents_tree[tg]
+      this.selected_item_type = Const.ITEM_TYPE_CATEGORY
     },
 
     click_talent_icon(t, tg, tree_type)
@@ -118,7 +129,8 @@ export default {
     {
       let talent = tree_type == this.tree_type_class ? 
                                     this.c_talents_tree[tg].talents[t] : this.g_talents_tree[tg].talents[t]
-      this.talent_or_stat_selected = talent
+      this.selected_item = talent
+      this.selected_item_type = Const.ITEM_TYPE_TALENT
     },
 
     assign_talent_points(tree_type, talent)
@@ -322,7 +334,8 @@ export default {
       race_selected : "",
       class_selected : "",
 
-      talent_or_stat_selected : {},
+      selected_item : {},
+      selected_item_type : Const.ITEM_TYPE_NONE,
 
       total_stat_points : 163,
       total_c_points : 70,
@@ -403,7 +416,7 @@ export default {
       this.change_lang(val)
     },
 
-    talent_or_stat_selected(){
+    selected_item(){
       this.update_desc_panel()
     }
   },
@@ -427,8 +440,15 @@ export default {
 </script>
 
 <style>
+
+@font-face {
+	font-family: salsa;
+	src: url('./assets/font/Salsa-Regular.ttf'); 
+}
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: "salsa", "Helvetica neue", Helvetica, Arial, Verdana, sans-serif;
+  font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -446,6 +466,20 @@ export default {
 
 .desc_panel {
   float: left
+}
+
+.variable {
+  color: #759022
+}
+
+.btn {
+  border-style: solid;
+  border-width: 8px;
+  border-image: url(./assets/ui/border-button.png) 8 fill repeat;
+  color: #eee;
+  font-size: 0.95em;
+  font-family: inherit;
+  align-self: center;
 }
 
 </style>

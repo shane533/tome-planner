@@ -6,7 +6,7 @@
         </label>
         <input :id="p_name" type="checkbox" style="display:none" v-model="expanded"/>
         <button id="reset" @click="on_click_reset_button">Reset</button>
-        <p class="name" @click="on_click_mastery">{{p_name}} ({{p_mastery.toFixed(2)}}) </p>
+        <p :class="name_class" @click="on_click_mastery">{{p_name}} ({{p_mastery.toFixed(2)}}) </p>
     </div>
     <div style="clear: both;"></div>
     <ol v-show="expanded">
@@ -38,8 +38,11 @@ export default {
 
     computed:
     {
-      expand_img(){
+      expand_img() {
         return this.expanded ? require("../assets/ui/minus.png") : require("../assets/ui/plus.png")
+      },
+      name_class() {
+        return this.p_unlocked ? "unlocked" : "locked"
       }
     },
 
@@ -82,12 +85,14 @@ export default {
         float :left
     }
 
-    .expand {
-      background:url("../assets/stats/constitution.png")
+    .unlocked {
+      color: #00FF00;
+      font-weight: bold;
     }
 
-    .expand:checked {
-      background:url("../assets/stats/magic.png")
+    .locked {
+      color: #969696;
+      font-weight: bold;
     }
 
     li {

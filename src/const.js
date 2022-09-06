@@ -7,5 +7,10 @@ export const Const = Object.freeze(
     TOTAL_CATEGORY_POINTS : 4,
     TOTAL_PRODIGY_POINTS : 2,
     MAX_POINTS_PER_STAT : 60,
+
+    ITEM_TYPE_NONE : 0,
+    ITEM_TYPE_TALENT : 1,
+    ITEM_TYPE_CATEGORY : 2,
+    ITEM_TYPE_STAT : 3,
 }
 );
