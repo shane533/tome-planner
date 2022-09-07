@@ -462,8 +462,7 @@ export default {
 
 .vertical_line {
   float:left;
-  display:flex;
-  height: 100%;
+  height: 700px;
   width : 30px;
   background-image: url("./assets/ui/border_vert_middle.png");
 }

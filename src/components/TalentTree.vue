@@ -52,6 +52,22 @@ export default {
     float: left;
     overflow: auto;
   }
+
+  .talent_tree::-webkit-scrollbar {
+    width:20px;
+  }
+
+  .talent_tree::-webkit-scrollbar-track {
+    background-image: url("../assets/ui/scrollbar_top.png"), url("../assets/ui/scrollbar.png"), url("../assets/ui/scrollbar_bottom.png");
+    background-repeat: no-repeat, repeat, no-repeat;
+    background-position-y: top, center, bottom;
+    background-size: auto, 80%, auto;
+  }
+  
+  .talent_tree::-webkit-scrollbar-thumb {
+    background-image: url("../assets/ui/scrollbar-sel.png");
+    background-repeat: no-repeat;
+  }
 /* h3 {
   margin: 40px 0 0;
 }
