@@ -12,5 +12,8 @@ export const Const = Object.freeze(
     ITEM_TYPE_TALENT : 1,
     ITEM_TYPE_CATEGORY : 2,
     ITEM_TYPE_STAT : 3,
+
+    TREE_TYPE_CLASS : "class",
+    TREE_TYPE_GENERIC : "generic",
 }
 );

@@ -1,8 +1,6 @@
 <template>
   <li class="stat_icon">
-    <div class="icon">
-      <img :src = p_img_url @click="on_click_stat" @mouseover="on_hover_stat">
-    </div>
+    <img class="icon" :src = p_img_url @click="on_click_stat" @mouseover="on_hover_stat">
     <p :class="points_class">{{p_total}}({{p_base}}) </p>
   </li>
 </template>
@@ -51,7 +49,6 @@ export default {
   li {
     list-style: none;
     align-self: center;
-    /* float:left; */
   }
 
   .max {

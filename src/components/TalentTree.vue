@@ -2,7 +2,7 @@
   <div class="talent_tree">
     <!-- <p v-for="t in p_talents_groups" :key="t.name"> {{t.name}} + {{t.talents_list}}</p> -->
     <ol>
-        <TalentGroup v-for="t of p_talents_groups" :key="t.name" :p_name="t.type" :p_mastery="t.mastery" :p_unlocked="t.unlocked" :p_talents="t.talents" @click_talent="on_click_talent" @hover_talent="on_hover_talent" @reset_talent_group="on_reset_talent_group" @click_mastery="on_click_mastery" /> 
+        <TalentGroup v-for="t of p_talents_groups" :key="t.type" :p_data="t" @click_talent="on_click_talent" @hover_talent="on_hover_talent" @reset_talent_group="on_reset_talent_group" @click_mastery="on_click_mastery" /> 
     </ol>
   </div>
 </template>
@@ -47,7 +47,10 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   .talent_tree {
-    float: left
+    width: 45%;
+    height: 700px;
+    float: left;
+    overflow: auto;
   }
 /* h3 {
   margin: 40px 0 0;

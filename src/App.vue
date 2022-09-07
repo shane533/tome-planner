@@ -19,24 +19,28 @@
     </select>
   </div>
   <div class="stat_panel">
-    <button class="btn" id="stat_button">Stat:{{total_stat_points}}</button>
-    <ol>
+    <button class="btn" id="stat_button">Stats:{{total_stat_points}}</button>
+    <ol class="stat_list">
       <StatIcon v-for="a in stats" :key="a.name" :p_id="a.name.toLowerCase()" :p_img_url="a.img_url" :p_base="a.base" :p_total="a.total"  @click_stat="click_stat_icon" @hover_stat="hover_stat_icon"></StatIcon>
     </ol>
   </div>
   <div class="talents_panel">
     <div class="talents_buttons_panel">
-      <button class="btn" id="c_points_btn">C Points:{{total_c_points}}</button>
-      <button class="btn" id="tree_points_btn">T Points:{{total_category_points}}</button>
-      <button class="btn" id="g_points_btn">G Points:{{total_g_points}}</button>
+      <button class="btn" id="c_points_btn">Class Points:{{total_c_points}}</button>
+      <button class="btn" id="t_points_btn">Category Points:{{total_category_points}}</button>
+      <button class="btn" id="g_points_btn">Generic Points:{{total_g_points}}</button>
       <div class="talents_tree_panel">
-        <TalentTree :p_type="tree_type_class" :p_talents_groups="c_talents_tree" @click_talent="click_talent_icon" @hover_talent="hover_talent_icon" @click_mastery="click_talent_mastery" @reset_talent_group="reset_talent_group"></TalentTree>
-        <TalentTree :p_type="tree_type_generic" :p_talents_groups="g_talents_tree" @click_talent="click_talent_icon" @hover_talent="hover_talent_icon" @click_mastery="click_talent_mastery" @reset_talent_group="reset_talent_group"></TalentTree>
+        <div class="vertical_line"></div>
+        <TalentTree :p_type="'class'" :p_talents_groups="c_talents_tree" @click_talent="click_talent_icon" @hover_talent="hover_talent_icon" @click_mastery="click_talent_mastery" @reset_talent_group="reset_talent_group"></TalentTree>
+        <div class="vertical_line"></div>
+        <TalentTree :p_type="'generic'" :p_talents_groups="g_talents_tree" @click_talent="click_talent_icon" @hover_talent="hover_talent_icon" @click_mastery="click_talent_mastery" @reset_talent_group="reset_talent_group"></TalentTree>
+        <div class="vertical_line"></div>
+        <div style="clear: both;"></div>
       </div>
     </div>
   </div>
-  <div class="desc_panel" v-html="desc">
-
+  <div class="desc_panel">
+    <TalentDesc :p_data="this.selected_item"></TalentDesc>
   </div>
   <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
   <!-- <img src="./assets/talents/absorb_life.png"> -->
@@ -48,6 +52,7 @@
 <script>
 import TalentTree from "./components/TalentTree.vue"
 import StatIcon from "./components/StatIcon.vue"
+import TalentDesc from "./components/TalentDesc.vue"
 import { Const } from "./const.js"
 
 export default {
@@ -56,7 +61,8 @@ export default {
 
   components: {
     StatIcon,
-    TalentTree
+    TalentTree,
+    TalentDesc
   },
 
   methods: {
@@ -95,7 +101,7 @@ export default {
     {
       console.log("CLICK TALENT MASTERY")
       if (this.total_category_points > 0) {
-        let group = tree_type == this.tree_type_class ? 
+        let group = tree_type == Const.TREE_TYPE_CLASS ? 
                                       this.c_talents_tree[tg] : this.g_talents_tree[tg]
         
         if (group.unlocked == false) {
@@ -111,14 +117,14 @@ export default {
 
     hover_talent_mastery(tg, tree_type)
     {
-      this.selected_item = tree_type == this.tree_type_class ? 
+      this.selected_item = tree_type == Const.TREE_TYPE_CLASS ? 
                                       this.c_talents_tree[tg] : this.g_talents_tree[tg]
       this.selected_item_type = Const.ITEM_TYPE_CATEGORY
     },
 
     click_talent_icon(t, tg, tree_type)
     {
-      let group = tree_type == this.tree_type_class ? 
+      let group = tree_type == Const.TREE_TYPE_CLASS ? 
                                     this.c_talents_tree[tg]
                                      : this.g_talents_tree[tg]
       let talent = group.talents[t]
@@ -129,16 +135,18 @@ export default {
 
     hover_talent_icon(t, tg, tree_type)
     {
-      let talent = tree_type == this.tree_type_class ? 
-                                    this.c_talents_tree[tg].talents[t] : this.g_talents_tree[tg].talents[t]
+      let group = tree_type == Const.TREE_TYPE_CLASS ? this.c_talents_tree[tg] : this.g_talents_tree[tg]
+      let talent = group.talents[t]
       this.selected_item = talent
+      this.selected_item["unlocked"] = group.unlocked
+      this.selected_item["mastery"] = group.mastery
       this.selected_item_type = Const.ITEM_TYPE_TALENT
     },
 
     assign_talent_points(tree_type, talent)
     {
       console.log("assign_talent_points of " + tree_type + " : " + talent.name)
-      tree_type == this.tree_type_class ? this.total_c_points -=1 : this.total_g_points -= 1
+      tree_type == Const.TREE_TYPE_CLASS ? this.total_c_points -=1 : this.total_g_points -= 1
       talent.cur_level += 1
     },
 
@@ -147,22 +155,11 @@ export default {
       console.log("===Click share button")
       this.serialize2base64()
     },
-    // change_lang(la){
-    //   if (la == "ZH_Hans") {
-    //     this.lang_file = lang_zh_file
-    //   } else if(la == "EN_En") {
-    //     this.lang_file = lang_en_file
-    //   }
-    // },
-
-    // _T(key) {
-    //   return this.lang_file[key]
-    // },
 
     reset_talent_group(tg, tree_type)
     {
       // console.log("Reset talent group:" + tg + " type:" + tree_type)
-      let group = tree_type == this.tree_type_class ? this.c_talents_tree[tg] : this.g_talents_tree[tg]
+      let group = tree_type == Const.TREE_TYPE_CLASS ? this.c_talents_tree[tg] : this.g_talents_tree[tg]
       
       let refund_points = 0
       for (let t of group.talents) {
@@ -183,7 +180,7 @@ export default {
         this.total_category_points += 1
       }
 
-      tree_type == this.tree_type_class ? this.total_c_points += refund_points : this.total_g_points += refund_points
+      tree_type == Const.TREE_TYPE_CLASS ? this.total_c_points += refund_points : this.total_g_points += refund_points
     },
 
     is_undead_race(race)
@@ -285,6 +282,7 @@ export default {
                   }
                   t["max_level"] = t["points"]
                   t["img_url"] = require("./assets/talents/"+ t["image"])
+                  t["index"] = i
                 }
 
                 if (tree == "talents_types_class") {
@@ -325,9 +323,6 @@ export default {
       title : "ToME Planner",
       tome_version : "1.7.4",
       desc : "testing descriptions",
-
-      tree_type_class : "class",
-      tree_type_generic : "generic",
 
       race_config:{},
 
@@ -390,19 +385,6 @@ export default {
         }
       },
 
-      // talents_group : [ {name : "absorb_life",
-      //                   img_url : new URL("./assets/talents/absorb_life.png", import.meta.url),
-      //                   cur_level : 0,
-      //                   max_level : 5 },
-      //                   {name : "acid_beam",
-      //                   img_url : new URL("./assets/talents/acidbeam.png", import.meta.url),
-      //                   cur_level : 0,
-      //                   max_level : 5 },
-      //                   {name : "ice_wall",
-      //                   img_url : new URL("./assets/talents/ice_wall.png", import.meta.url),
-      //                   cur_level : 0,
-      //                   max_level : 5 },
-      //                   ],
       c_talents_tree : {},
       g_talents_tree : {}
     }
@@ -464,16 +446,64 @@ export default {
   margin-top: 60px;
 }
 
+#c_points_btn {
+  float: left;
+  margin-left: 3%
+}
+
+#t_points_btn {
+  float: center;
+}
+
+#g_points_btn {
+  float: right;
+  margin-right: 3%;
+}
+
+.vertical_line {
+  float:left;
+  display:flex;
+  height: 100%;
+  width : 30px;
+  background-image: url("./assets/ui/border_vert_middle.png");
+}
+
+.vertical_line ::before {
+  background-image: url("./assets/ui/border_vert_top.png");
+}
+
 .stat_panel {
-  float: left
+  float: left;
+  left: 0px;
+  position: absolute;
+  width: 6%;
+  text-align: center;
+  padding-left: 1%;
+}
+
+.stat_list {
+  margin-top: 25px;
 }
 
 .talents_panel {
-  float: left
+  float: left;
+  /* position: relative; */
+  margin-left: 6%;
+  margin-right: 34%;
+  width: 60%;
+}
+
+.talents_tree_panel {
+  width:inherit;
+  margin-top: 1%;
 }
 
 .desc_panel {
-  float: left
+  /* float: left */
+  left: unset;
+  right: 0px;
+  position: absolute;
+  width: 34%;
 }
 
 .variable {
@@ -482,12 +512,17 @@ export default {
 
 .btn {
   border-style: solid;
-  border-width: 8px;
+  border-width: 4px;
   border-image: url(./assets/ui/border-button.png) 8 fill repeat;
   color: #eee;
   font-size: 0.95em;
   font-family: inherit;
   align-self: center;
 }
+
+ol {
+  padding-inline-start: 5px;
+}
+
 
 </style>

@@ -1,8 +1,6 @@
 <template>
   <li class="talent_icon">
-    <div class="icon">
-      <img :src = p_img_url @click="on_click_talent" @mouseover="on_hover_talent">
-    </div>
+    <img class="icon" :src = p_img_url @click="on_click_talent" @mouseover="on_hover_talent">
     <p :class="{max: p_cur_level==p_max_level}">{{p_cur_level}}/{{p_max_level}}</p>
   </li>
 </template>
@@ -53,6 +51,6 @@ export default {
   li {
     list-style: none;
     float:left;
-    margin-left : 3%;
+    margin-left : 5px;
   }
 </style>
