@@ -109,8 +109,11 @@ export default {
         } else if (group.enhanced == false) {
           group.mastery += 0.2
           group.enhanced = true
+        } else {
+          return
         }
   
+        group.dirty = true
         this.total_category_points -= 1
       }
     },
@@ -129,6 +132,7 @@ export default {
                                      : this.g_talents_tree[tg]
       let talent = group.talents[t]
       if (group.unlocked && talent.cur_level < talent.max_level) {
+        group.dirty = true
         this.assign_talent_points(tree_type, talent)
       }
     },
@@ -154,13 +158,19 @@ export default {
     {
       console.log("===Click share button")
       this.serialize2base64()
+      navigator.clipboard.writeText(this.build).then(function() {
+        console.log('Async: Copying to clipboard was successful!');
+        alert("URL copied to clipboard")
+      }, function(err) {
+        console.error('Async: Could not copy text: ', err);
+      });
     },
 
     reset_talent_group(tg, tree_type)
     {
       // console.log("Reset talent group:" + tg + " type:" + tree_type)
       let group = tree_type == Const.TREE_TYPE_CLASS ? this.c_talents_tree[tg] : this.g_talents_tree[tg]
-      
+      group.dirty = false
       let refund_points = 0
       for (let t of group.talents) {
         if (! t.no_unlearn_last == true) {
@@ -258,17 +268,33 @@ export default {
 
       for (let tree of ["talents_types_class", "talents_types_generic"]) {
         let class_config = this.class_config[this.class_selected]
-        for (let ctg in class_config[tree]) {
-          let talents = class_config[tree][ctg]
-          let mastery = talents[1]
+        let sorted = []
+        for (let type in class_config[tree]) {
+          let group = class_config[tree][type]
+          group[4] = type
+          sorted.push(group)
+        }
+        sorted = [
+          ...sorted.filter(item => item[0]),
+          ...sorted.filter(item => !item[0]),
+        ]
+        for (let i in sorted) {
+        // for (let ctg in class_config[tree]) {
+          let ctg = sorted[i][4]
+          let talent_group = class_config[tree][ctg]
+          // let talent_group = class_config[tree][ctg]
+          let mastery = talent_group[1]
           let type = ctg.split("/")[0]
           // let name = ctg.split("/")[1]
           let t_status = {
+            "index" : i,
             "mastery" : mastery,
-            "unlocked" : talents[0],
-            "default_unlocked" : talents[0],
-            "enhanced" : false
+            "unlocked" : talent_group[0],
+            "default_unlocked" : talent_group[0],
+            "enhanced" : false,
+            "dirty" : false,
           }
+          
           await import(`@/assets/data/${this.tome_version}/talents.${type}-${mastery}.json`).then((module)=>{
             // console.log(ctg)
             for (let i in module) {
@@ -292,28 +318,104 @@ export default {
                 }
               }
             }
+
+            if (tree == "talents_types_generic" && t_status.index == sorted.length-1){
+              this.finish_loading()
+            }
           })
         }
       }
 
+    },
+
+    finish_loading()
+    {
+      console.log("=====Finish Loading")
       this.is_reseting = false
+      if (this.build && this.build != "") {
+        this.deserialize_base64_remains()
+      }
     },
 
     serialize2base64() 
     {
-      let obj = {race:this.race_selected, 
-                 class:this.class_selected}
+      let stats = []
+      for (let s in this.stats) {
+        stats.push(this.stats[s].base)
+      }
+      let class_talents = {}
+      for (let tg in this.c_talents_tree) {
+        if (this.c_talents_tree[tg].dirty) {
+          class_talents[tg] = [this.c_talents_tree[tg].unlocked, this.c_talents_tree[tg].mastery, []]
+          for (let t in this.c_talents_tree[tg].talents)
+          class_talents[tg][2].push(this.c_talents_tree[tg].talents[t].cur_level)
+        }
+      }
+      let generic_talents = {}
+      for (let tg in this.g_talents_tree) {
+        if (this.g_talents_tree[tg].dirty) {
+          generic_talents[tg] = [this.g_talents_tree[tg].unlocked, this.g_talents_tree[tg].mastery, []]
+          for (let t in this.g_talents_tree[tg].talents)
+          generic_talents[tg][2].push(this.g_talents_tree[tg].talents[t].cur_level)
+        }
+      }
+      let obj = {R:this.race_selected, 
+                 C:this.class_selected,
+                 S:stats,
+                 SP:this.total_stat_points,
+                 CP:this.total_c_points,
+                 TP:this.total_category_points,
+                 GP:this.total_g_points,
+                 CT:class_talents,
+                 GT:generic_talents,
+                }
       let str = JSON.stringify(obj)
+      console.log(str)
+      console.log(str.length)
       let b64 = window.btoa(str)
       this.build = b64
     },
 
-    deserialize_base64()
+    deserialize_base64_remains()
+    {
+      console.log(this.build_json)
+      this.total_stat_points = this.build_json.SP
+      this.total_c_points = this.build_json.CP
+      this.total_category_points = this.build_json.TP
+      this.total_category_points = this.build_json.GP
+      let keys=["str", "dex", "con", "mag", "wil", "cun"]
+      for (let i in this.build_json.S) {
+        this.stats[keys[i]].base = this.build_json.S[i]
+        this.stats[keys[i]].total = this.build_json.S[i]
+      }
+
+      for (let t in this.build_json.CT) {
+        console.log(t)
+        this.c_talents_tree[t].dirty = true
+        this.c_talents_tree[t].unlocked = this.build_json.CT[t][0]
+        this.c_talents_tree[t].mastery = this.build_json.CT[t][1]
+        for (let i in this.build_json.CT[t][2]) {
+          this.c_talents_tree[t].talents[i].cur_level = this.build_json.CT[t][2][i]
+        }
+      }
+
+      for (let t in this.build_json.GT) {
+        this.g_talents_tree[t].dirty = true
+        this.g_talents_tree[t].unlocked = this.build_json.GT[t][0]
+        this.g_talents_tree[t].mastery = this.build_json.GT[t][1]
+        for (let i in this.build_json.GT[t][2]) {
+          this.g_talents_tree[t].talents[i].cur_level = this.build_json.GT[t][2][i]
+        }
+      }
+      this.build=""
+    },
+
+    deserialize_base64_race_and_class()
     {
       let str = window.atob(this.build)
-      let obj = JSON.parse(str)
-      this.race_selected = obj.race
-      this.class_selected = obj.class
+      this.build_json = JSON.parse(str)
+      this.race_selected = this.build_json.R
+      this.class_selected = this.build_json.C
     }
   },
 
@@ -332,6 +434,7 @@ export default {
       talents_config:{},
 
       build : "", //build string passed through URL
+      build_json: {},
       is_reseting : false,
 
       race_selected : "",
@@ -412,18 +515,20 @@ export default {
   },
 
   mounted() {
-
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    this.build = urlParams.get("build");
     
     import(`@/assets/data/${this.tome_version}/races.json`).then((module)=>{
       this.race_config = module["subraces"]
       import(`@/assets/data/${this.tome_version}/classes.json`).then((module)=>{
         this.class_config = module["subclasses"]
-        this.deserialize_base64()
+        if (this.build) {
+          this.deserialize_base64_race_and_class()
+        }
       })
     })
 
-    const urlParams = new URLSearchParams(window.location.search);
-    this.build = urlParams.get("build");
 
   }
 }
