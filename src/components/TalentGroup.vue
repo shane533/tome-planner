@@ -1,15 +1,15 @@
 <template>
-  <li class="talent_group" :style="{'filter': 'grayscale(50%)'}">
+  <li>
     <div class="title">
         <label :for="p_name">
           <img :src="expand_img">
         </label>
         <input :id="p_name" type="checkbox" style="display:none" v-model="expanded"/>
-        <button id="reset" @click="on_click_reset_button">Reset</button>
         <p :class="name_class" @click="on_click_mastery">{{p_name}} ({{p_mastery.toFixed(2)}}) </p>
+        <button class="btn" id="reset" @click="on_click_reset_button">reset</button>
     </div>
     <div style="clear: both;"></div>
-    <ol v-show="expanded">
+    <ol v-show="expanded" :class="{locked_group: !p_unlocked}">
         <TalentIcon v-for="(t, index) in p_talents" :key="t.name" :p_index="index" :p_name="t.name" :p_img_url="t.img_url" :p_cur_level="t.cur_level" :p_max_level="t.max_level" @click_talent="on_click_talent" @hover_talent="on_hover_talent" />
         <div style="clear: both;"></div>
     </ol>
@@ -86,17 +86,22 @@ export default {
     }
 
     .unlocked {
+      margin-left: 5px;
       color: #00FF00;
       font-weight: bold;
     }
 
     .locked {
+      margin-left: 5px;
       color: #969696;
       font-weight: bold;
     }
+    
+    .locked_group {
+      filter: brightness(50%);
+    }
 
     li {
-        /* float:left; */
         list-style: none;
     }
 

@@ -118,9 +118,11 @@ export default {
 
     click_talent_icon(t, tg, tree_type)
     {
-      let talent = tree_type == this.tree_type_class ? 
-                                    this.c_talents_tree[tg].talents[t] : this.g_talents_tree[tg].talents[t]
-      if (talent.cur_level < talent.max_level) {
+      let group = tree_type == this.tree_type_class ? 
+                                    this.c_talents_tree[tg]
+                                     : this.g_talents_tree[tg]
+      let talent = group.talents[t]
+      if (group.unlocked && talent.cur_level < talent.max_level) {
         this.assign_talent_points(tree_type, talent)
       }
     },
@@ -173,6 +175,11 @@ export default {
       if (group.enhanced) {
         group.mastery -= 0.2
         group.enhanced = false
+        this.total_category_points += 1
+      }
+
+      if (group.unlocked && !group.default_unlocked) {
+        group.unlocked = false
         this.total_category_points += 1
       }
 
@@ -262,6 +269,7 @@ export default {
           let t_status = {
             "mastery" : mastery,
             "unlocked" : talents[0],
+            "default_unlocked" : talents[0],
             "enhanced" : false
           }
           await import(`@/assets/data/${this.tome_version}/talents.${type}-${mastery}.json`).then((module)=>{

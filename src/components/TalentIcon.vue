@@ -3,7 +3,7 @@
     <div class="icon">
       <img :src = p_img_url @click="on_click_talent" @mouseover="on_hover_talent">
     </div>
-    <p>{{p_cur_level}}/{{p_max_level}}</p>
+    <p :class="{max: p_cur_level==p_max_level}">{{p_cur_level}}/{{p_max_level}}</p>
   </li>
 </template>
 
@@ -44,6 +44,10 @@ export default {
     border-style: solid;
     border-width: 2px;
     border-color: #969696
+  }
+
+  .max {
+    color: #00FF00
   }
 
   li {
