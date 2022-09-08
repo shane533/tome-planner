@@ -15,5 +15,7 @@ export const Const = Object.freeze(
 
     TREE_TYPE_CLASS : "class",
     TREE_TYPE_GENERIC : "generic",
+
+    SHARE_URL : "https://shane533.github.io/tome-planner?build=",
 }
 );

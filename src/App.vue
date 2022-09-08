@@ -40,7 +40,7 @@
     </div>
   </div>
   <div class="desc_panel">
-    <TalentDesc :p_data="this.selected_item"></TalentDesc>
+    <TalentDesc v-if="is_selecting_talent" :p_data="this.selected_item"></TalentDesc>
   </div>
   <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
   <!-- <img src="./assets/talents/absorb_life.png"> -->
@@ -158,7 +158,7 @@ export default {
     {
       console.log("===Click share button")
       this.serialize2base64()
-      navigator.clipboard.writeText(this.build).then(function() {
+      navigator.clipboard.writeText(Const.SHARE_URL+this.build).then(function() {
         console.log('Async: Copying to clipboard was successful!');
         alert("URL copied to clipboard")
       }, function(err) {
@@ -493,6 +493,12 @@ export default {
     }
   },
 
+  computed: {
+    is_selecting_talent() {
+      return this.selected_item_type == Const.ITEM_TYPE_TALENT
+    }
+  },
+
   watch: {
     race_selected(val){
       console.log("select race: " + val)
@@ -611,6 +617,14 @@ export default {
 }
 
 .variable {
+  color: #759022
+}
+
+.talent-variable {
+  color: #759022
+}
+
+.stat-variable {
   color: #759022
 }
 
