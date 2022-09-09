@@ -26,6 +26,28 @@ export const Const = Object.freeze(
         'mag' : 'Magic',
         'wil' : 'Willpower',
         'cun' : 'Cunning'
-    }
+    },
+
+    USE_MODE_SUSTAIN : "sustained",
+
+    RESOURCE_TYPES:{
+        "equilibrium" : "equilibrium",
+        "feedback" : "feedback",
+        "hate" : "hate",
+        "insanity" : "insantiy",
+        "life" : "life",
+        "mana" : "mana",
+        "negative" : "negative energy",
+        "positive" : "positive energy",
+        "paradox" : "paradox",
+        "psi" : "psi",
+        "souls" : "souls",
+        "stamina" : "stamina",
+        "steam" : "steam",
+        "vim" : "vim",
+    },
+
+    HIDDEN_RACES : [],
+    HIDDEN_CLASSES : ["NONE","EMPYREAL","ADVENTURER","WANDERER","TUTORIAL_ADVENTURER"]
 }
 );

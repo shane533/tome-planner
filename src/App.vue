@@ -5,17 +5,21 @@
     <p>For ToME Version: {{tome_version}}</p>
   </div>
   <div class="debug">
-    <h1>Debug:{{build}}</h1>
+    <h3>URL:Https://shane533.github.io/tome-planner?build={{build}}</h3>
     <button class="btn" id="share_button" @click="click_share_button">Share</button>
   </div>
   <div class="select_panel">
     <select id="race_select" v-model="race_selected">
       <option disabled value="">select a race</option>
-      <option v-for="r in race_config" :key="r.short_name" :value="r.short_name">{{r.name}}</option>
+      <template v-for="r in race_config" :key="r.short_name" >
+        <option v-if="avaliable_race(r.short_name)" :value="r.short_name">{{r.name}}</option>
+      </template>
     </select>
     <select id="class_select" v-model="class_selected">
       <option disabled value="">select a class</option>
-      <option v-for="c in class_config" :key="c.short_name" :value="c.short_name">{{c.name}}</option>
+      <template v-for="c in class_config" :key="c.short_name">
+        <option v-if="avaliable_class(c.short_name)" :value="c.short_name">{{c.name}}</option>
+      </template>
     </select>
   </div>
   <div class="stat_panel">
@@ -66,6 +70,24 @@ export default {
   },
 
   methods: {
+
+    avaliable_race(short_name)
+    {
+      if (Const.HIDDEN_RACES.indexOf(short_name) != -1){
+        return false
+      } else {
+        return true
+      }
+    },
+
+    avaliable_class(short_name)
+    {
+      if (Const.HIDDEN_CLASSES.indexOf(short_name) != -1){
+        return false
+      } else {
+        return true
+      }
+    },
 
     update_desc_panel()
     {
@@ -291,6 +313,11 @@ export default {
         import(`@/assets/data/${this.tome_version}/talents.undead-1.json`).then(this.on_load_race_talent)
       } else {
         import(`@/assets/data/${this.tome_version}/talents.race-1.json`).then(this.on_load_race_talent)
+      }
+
+      if (Object.keys(this.class_config[this.class_selected]["talents_types_class"]).length == 0) {
+        this.finish_loading()
+        return
       }
 
       for (let tree of ["talents_types_class", "talents_types_generic"]) {
@@ -601,7 +628,7 @@ export default {
 .vertical_line {
   float:left;
   height: 700px;
-  width : 30px;
+  width : 20px;
   background-image: url("./assets/ui/border_vert_middle.png");
 }
 

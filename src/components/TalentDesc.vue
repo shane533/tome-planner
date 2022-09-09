@@ -10,7 +10,8 @@
         </ol>
         <p style="color:#00ff00" id="effect_level"><span class="c1">Effect talent level:</span> {{effect_level_str}}</p>
         <p style="color:#00ff00"><span class="c1">Use mode: </span>{{use_mode_str}}</p>
-        <p style="color:#00ff00" v-if="this.p_data.cost"><span class="c1" >{{resource_str}} cost: </span>{{cost_str}}</p>
+        <p style="color:#00ff00" v-for="c of costs" :key="c.desc"><span class="c1">{{c.desc}} </span>{{c.value}} </p>
+        <!-- <p style="color:#00ff00" v-if="this.p_data.cost"><span class="c1" >{{resource_str}}</span>{{cost_str}}</p> -->
         <p v-if="this.p_data.range"><span class="c1">Range: </span>{{range_str}}</p>
         <p v-if="this.p_data.cooldown"><span class="c1">Cooldown: </span>{{cd_str}}</p>
         <p v-if="this.p_data.proj_speed"><span class="c1">Travel Speed: </span>{{tra_spd_str}}</p>
@@ -24,6 +25,7 @@
   
   <script>
   
+  import { Const } from "../const.js"
   
   export default {
     name: 'TalentDesc',
@@ -88,27 +90,36 @@
         },
 
         tra_spd_str() {
-            return this.p_data.proj_speed
+            let a = parseFloat(this.p_data.proj_speed) * 100
+            return a.toString() + "% of base"
         },
 
         use_spd_str() {
             return this.p_data.use_speed
         },
 
-        resource_str() {
-            if (this.p_data.mode == "sustained") {
-                return "Sustain " + this.p_data.cost.split(" ")[1]
-            } else {
-                return this.cap_first(this.p_data.cost.split(" ")[1])
+        costs() {
+            let ret = []
+            for (let r in Const.RESOURCE_TYPES) {
+                if (this.p_data[r] || this.p_data["sustain_"+r] ){
+                    let value = this.p_data[r] ? this.p_data[r] : this.p_data["sustain_"+r]
+                    let obj = {}
+                    obj["value"] = Math.abs(value)
+                    let str =""
+                    str = Const.RESOURCE_TYPES[r]
+                    if (this.p_data.mode == Const.USE_MODE_SUSTAIN) {
+                        str = "sustain " + str
+                    } 
+                    if (value > 0) {
+                        str += " cost: "
+                    } else {
+                        str += " gain: "
+                    }
+                    obj["desc"] = this.cap_first(str)
+                    ret.push(obj)
+                }
             }
-        },
-
-        cost_str() {
-            if (this.p_data.cost && typeof(this.p_data.cost) == "string" ) {
-                return this.p_data.cost.split(" ")[0]
-            } else {
-                return ""
-            }
+            return ret
         },
 
         is_str() {
