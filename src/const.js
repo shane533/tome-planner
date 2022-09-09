@@ -17,5 +17,15 @@ export const Const = Object.freeze(
     TREE_TYPE_GENERIC : "generic",
 
     SHARE_URL : "https://shane533.github.io/tome-planner?build=",
+
+    STAT_KEYS : ['str', 'dex', 'con', 'mag', 'wil', 'cun'],
+    STAT_NAME : {
+        'str' : "Strength",
+        'dex' : 'Dexterity',
+        'con' : 'Consitution',
+        'mag' : 'Magic',
+        'wil' : 'Willpower',
+        'cun' : 'Cunning'
+    }
 }
 );

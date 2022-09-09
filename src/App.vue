@@ -21,7 +21,7 @@
   <div class="stat_panel">
     <button class="btn" id="stat_button">Stats:{{total_stat_points}}</button>
     <ol class="stat_list">
-      <StatIcon v-for="a in stats" :key="a.name" :p_id="a.name.toLowerCase()" :p_img_url="a.img_url" :p_base="a.base" :p_total="a.total"  @click_stat="click_stat_icon" @hover_stat="hover_stat_icon"></StatIcon>
+      <StatIcon v-for="a in stats" :key="a.name" :p_id="a.name.toLowerCase()" :p_img_url="a.img_url" :p_base="a.base" :p_total="a.total"  @click_stat="click_stat_icon" @hover_stat="hover_stat_icon" @max_stat="maximize_or_clear_stat"></StatIcon>
     </ol>
   </div>
   <div class="talents_panel">
@@ -35,7 +35,7 @@
         <div class="vertical_line"></div>
         <TalentTree :p_type="'generic'" :p_talents_groups="g_talents_tree" @click_talent="click_talent_icon" @hover_talent="hover_talent_icon" @click_mastery="click_talent_mastery" @reset_talent_group="reset_talent_group"></TalentTree>
         <div class="vertical_line"></div>
-        <div style="clear: both;"></div>
+        <!-- <div style="clear: both;"></div> -->
       </div>
     </div>
   </div>
@@ -97,6 +97,29 @@ export default {
       this.total_stat_points -= 1
     },
 
+    maximize_or_clear_stat(key)
+    {
+      if (this.stats[key].base == Const.MAX_POINTS_PER_STAT) {
+        //Clear
+        let delta = Const.MAX_POINTS_PER_STAT - this.stats[key].init
+        this.stats[key].base = this.stats[key].init
+        this.stats[key].total = this.stats[key].init
+        this.total_stat_points += delta
+      } else {
+        //Maximize
+        if (this.total_stat_points <= 0) {
+          return
+        }
+        let delta = Const.MAX_POINTS_PER_STAT - this.stats[key].base
+        if(delta > this.total_stat_points) {
+          delta = this.total_stat_points
+        }
+        this.stats[key].base += delta
+        this.stats[key].total += delta
+        this.total_stat_points -= delta
+      }
+    },
+
     click_talent_mastery(tg, tree_type)
     {
       console.log("CLICK TALENT MASTERY")
@@ -137,13 +160,15 @@ export default {
       }
     },
 
-    hover_talent_icon(t, tg, tree_type)
+    hover_talent_icon(index, tg, tree_type)
     {
       let group = tree_type == Const.TREE_TYPE_CLASS ? this.c_talents_tree[tg] : this.g_talents_tree[tg]
-      let talent = group.talents[t]
+      let talent = group.talents[index]
       this.selected_item = talent
       this.selected_item["unlocked"] = group.unlocked
       this.selected_item["mastery"] = group.mastery
+      this.selected_item["category_dep"] = index == 0 ? true : group.talents[index-1].cur_level > 0
+      this.selected_item["index"] = index
       this.selected_item_type = Const.ITEM_TYPE_TALENT
     },
 
@@ -248,12 +273,14 @@ export default {
       for (let k in this.stats) {
         if  ("stats" in this.race_config[this.race_selected]) {
           this.stats[k].base = k in this.race_config[this.race_selected]["stats"] ? Const.BASE_STAT_POINT + this.race_config[this.race_selected]["stats"][k] : Const.BASE_STAT_POINT
-          this.stats[k].total = k in this.race_config[this.race_selected]["stats"] ? Const.BASE_STAT_POINT + this.race_config[this.race_selected]["stats"][k] : Const.BASE_STAT_POINT
+          this.stats[k].total = this.stats[k].base
+          this.stats[k].init = this.stats[k].base
         }
 
         if ("stats" in this.class_config[this.class_selected]){
           this.stats[k].base += (k in this.class_config[this.class_selected]["stats"] ? this.class_config[this.class_selected]["stats"][k] : 0)
-          this.stats[k].total += (k in this.class_config[this.class_selected]["stats"] ? this.class_config[this.class_selected]["stats"][k] : 0)
+          this.stats[k].total = this.stats[k].base
+          this.stats[k].init = this.stats[k].base
         }
       }
 
@@ -382,8 +409,8 @@ export default {
       this.total_stat_points = this.build_json.SP
       this.total_c_points = this.build_json.CP
       this.total_category_points = this.build_json.TP
-      this.total_category_points = this.build_json.GP
-      let keys=["str", "dex", "con", "mag", "wil", "cun"]
+      this.total_g_points = this.build_json.GP
+      let keys = Const.STAT_KEYS
       for (let i in this.build_json.S) {
         this.stats[keys[i]].base = this.build_json.S[i]
         this.stats[keys[i]].total = this.build_json.S[i]

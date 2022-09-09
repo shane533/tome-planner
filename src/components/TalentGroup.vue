@@ -10,7 +10,7 @@
     </div>
     <div style="clear: both;"></div>
     <ol v-show="expanded" :class="{locked_group: !p_data.unlocked}">
-        <TalentIcon v-for="(t, index) in p_data.talents" :key="t.name" :p_index="index" :p_name="t.name" :p_img_url="t.img_url" :p_cur_level="t.cur_level" :p_max_level="t.max_level" @click_talent="on_click_talent" @hover_talent="on_hover_talent" />
+        <TalentIcon v-for="(t, index) in p_data.talents" :key="t.name" :p_index="index" :p_data="t" :p_req="this.meet_category_reqs(index)" @click_talent="on_click_talent" @hover_talent="on_hover_talent" />
         <div style="clear: both;"></div>
     </ol>
   </li>
@@ -44,6 +44,15 @@ export default {
     },
 
     methods: {
+
+      meet_category_reqs(index)
+      {
+        if (index == 0 || this.p_data.talents[index].no_levelup_category_deps) {
+          return true
+        } else {
+          return this.p_data.talents[index-1].cur_level > 0
+        }
+      },
 
       on_click_mastery()
       {

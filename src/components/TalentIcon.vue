@@ -1,7 +1,7 @@
 <template>
   <li class="talent_icon">
-    <img class="icon" :src = p_img_url @click="on_click_talent" @mouseover="on_hover_talent">
-    <p :class="{max: p_cur_level==p_max_level}">{{p_cur_level}}/{{p_max_level}}</p>
+    <img :class="{icon:true, dark:!p_req}"  :src = p_data.img_url @click="on_click_talent" @mouseover="on_hover_talent">
+    <p :class="{max: p_data.cur_level==p_data.max_level, locked:!p_req}">{{p_data.cur_level}}/{{p_data.max_level}}</p>
   </li>
 </template>
 
@@ -11,21 +11,21 @@
 export default {
   name: 'TalentIcon',
   props: {
+    p_data: Object,
     p_index: Number,
-    p_name: String,
-    p_cur_level: Number,
-    p_max_level: Number,
-    p_img_url: String
+    p_req: Boolean 
   },
 
   methods: {
     on_click_talent() {
       // console.log("TalentIcon.Click talent:" + this.p_name)
-      this.$emit("click_talent", this.p_index)
+      if (this.p_req) {
+        this.$emit("click_talent", this.p_index)
+      }
     },
 
     on_hover_talent() {
-      // console.log("TalentIcon.Hover: " + this.p_name)
+      // console.log("TalentIcon.Hover: " + this.p_req)
       this.$emit("hover_talent", this.p_index)
     }
   }
@@ -44,8 +44,16 @@ export default {
     border-color: #969696
   }
 
+  .dark {
+    filter:brightness(0.5)
+  }
+
   .max {
     color: #00FF00
+  }
+
+  .locked {
+    color : red
   }
 
   li {

@@ -2,6 +2,7 @@
   <li class="stat_icon">
     <img class="icon" :src = p_img_url @click="on_click_stat" @mouseover="on_hover_stat">
     <p :class="points_class">{{p_total}}({{p_base}}) </p>
+    <button class="btn" id="max_btn" @click="on_click_max_stat">{{max_or_clear}}</button>
   </li>
 </template>
 
@@ -28,12 +29,21 @@ export default {
     on_hover_stat()
     {
       this.$emit("hover_stat", this.p_id)
+    },
+
+    on_click_max_stat()
+    {
+      this.$emit("max_stat", this.p_id)
     }
   },
 
   computed: {
     points_class() {
       return this.p_base >= 60 ? "max" : "normal" 
+    },
+
+    max_or_clear() {
+      return this.p_base >= 60 ? "C" : "M"
     }
   }
 }
@@ -42,13 +52,8 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
-  p {
-    margin-top: 0%;
-  }
-
-  li {
-    list-style: none;
-    align-self: center;
+  #max_btn {
+    border-width: 1px;
   }
 
   .max {
@@ -65,4 +70,13 @@ export default {
     border-color: #969696;
   }
 
+  p {
+    margin-top: 0%;
+    float:left;
+  }
+
+  li {
+    list-style: none;
+    align-self: center;
+  }
 </style>

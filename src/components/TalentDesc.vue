@@ -4,15 +4,18 @@
         <p id="talent_level">Current talent level: {{p_data.cur_level}}</p>
         <ol id="requre_list">
             <li :style="{color: p_data.unlocked ? '#00ff00' : 'red'}">Talent category known</li>
+            <li v-if="!this.p_data.no_levelup_category_deps && p_data.index!=0" :style="{color: p_data.category_dep ? '#00ff00' : 'red'}">Lower talents of the same category: {{p_data.index}}</li>
+            <li v-if="stat_req!=''">{{stat_req}}</li>
             <li>Level: {{level_str}}</li>
         </ol>
-        <p id="effect_level"><span class="c1">Effect talent level:</span> {{effect_level_str}}</p>
-        <p><span class="c1">Use mode: </span>{{use_mode_str}}</p>
-        <p><span class="c1" v-if="this.p_data.cost">{{resource_str}} Cost: </span>{{cost_str}}</p>
-        <p><span class="c1" v-if="this.p_data.range">Range: </span>{{range_str}}</p>
-        <p><span class="c1" v-if="this.p_data.cooldown">Cooldown: </span>{{cd_str}}</p>
-        <p><span class="c1" v-if="this.p_data.proj_speed">Travel Speed: </span>{{tra_spd_str}}</p>
-        <p><span class="c1" v-if="this.p_data.use_speed">Use Speed: </span>{{use_spd_str}}</p>
+        <p style="color:#00ff00" id="effect_level"><span class="c1">Effect talent level:</span> {{effect_level_str}}</p>
+        <p style="color:#00ff00"><span class="c1">Use mode: </span>{{use_mode_str}}</p>
+        <p style="color:#00ff00" v-if="this.p_data.cost"><span class="c1" >{{resource_str}} cost: </span>{{cost_str}}</p>
+        <p v-if="this.p_data.range"><span class="c1">Range: </span>{{range_str}}</p>
+        <p v-if="this.p_data.cooldown"><span class="c1">Cooldown: </span>{{cd_str}}</p>
+        <p v-if="this.p_data.proj_speed"><span class="c1">Travel Speed: </span>{{tra_spd_str}}</p>
+        <p v-if="this.p_data.use_speed"><span class="c1">Use Speed: </span>{{use_spd_str}}</p>
+        <p v-if="is_str!=''"><span class="c1" >Is: </span>{{is_str}}</p>
         <p class="c1" id="desc_head">Description:</p>
         <div v-html="info_str"></div>
 
@@ -49,6 +52,24 @@
             }
         },
 
+        stat_req() {
+            if (this.p_data.require) {
+                let tmp = this.p_data.require[0].split(", ")
+                if (tmp.length == 1) {
+                    return ""
+                } else {
+                    let stat = tmp[1].split(" ")[0]
+                    let t = []
+                    for (let r of this.p_data.require) {
+                        t.push(r.split(", ")[1].split(" ")[1])
+                    }
+                    return stat + " " + t.join(", ")
+                }
+            } else {
+                return ""
+            }
+        }, 
+
         use_mode_str() {
             if (this.p_data.mode) {
                 return this.cap_first(this.p_data.mode)
@@ -75,7 +96,11 @@
         },
 
         resource_str() {
-            return this.cap_first(this.p_data.cost.split(" ")[1])
+            if (this.p_data.mode == "sustained") {
+                return "Sustain " + this.p_data.cost.split(" ")[1]
+            } else {
+                return this.cap_first(this.p_data.cost.split(" ")[1])
+            }
         },
 
         cost_str() {
@@ -84,6 +109,30 @@
             } else {
                 return ""
             }
+        },
+
+        is_str() {
+            let ret=""
+            let pairs = {
+                is_antimagic : "an antimagic ability",
+                is_mind : "an mind power",
+                is_nature : "an nature gift",
+                is_spell : "an spell"
+            }
+            let out= []
+            for (let k in pairs) {
+                if (this.p_data[k]) {
+                    out.push(pairs[k])
+                }
+            }
+            if (out.length == 1) {
+                ret = out[0]
+            }else if(out.length > 1) {
+                let last = out.pop()
+                ret = out.join(", ")
+                ret = ret + " and " + last
+            }
+            return ret
         },
 
         info_str() {
@@ -148,7 +197,8 @@
     }
 
     li {
-        color: #00FF00
+        color: #00FF00;
+        margin-inline-start: 10px; 
     }
 
   </style>
