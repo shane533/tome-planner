@@ -8,6 +8,9 @@ export const Const = Object.freeze(
     TOTAL_PRODIGY_POINTS : 2,
     MAX_POINTS_PER_STAT : 60,
 
+    INSCRIPTION_SLOT_BASE : 3,
+    INSCRIPTION_SLOT_MAX : 5,
+
     ITEM_TYPE_NONE : 0,
     ITEM_TYPE_TALENT : 1,
     ITEM_TYPE_CATEGORY : 2,

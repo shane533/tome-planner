@@ -16,6 +16,8 @@ export default {
     p_req: Boolean 
   },
 
+  emits: ['click_talent', 'hover_talent'],
+
   methods: {
     on_click_talent() {
       // console.log("TalentIcon.Click talent:" + this.p_name)
