@@ -1,5 +1,5 @@
 <template>
-  <li>
+  <li class="talent-group">
     <div class="title">
         <label :for="p_data.type">
           <img :src="expand_img">
@@ -8,10 +8,8 @@
         <p :class="name_class" @click="on_click_mastery">{{p_data.category}} / {{p_data.name}} ({{p_data.mastery.toFixed(2)}}) </p>
         <button class="btn" id="reset" @click="on_click_reset_button">X</button>
     </div>
-    <div style="clear: both;"></div>
-    <ol v-show="expanded" :class="{locked_group: !p_data.unlocked}">
-        <TalentIcon v-for="(t, index) in p_data.talents" :key="t.name" :p_index="index" :p_data="t" :p_req="this.meet_category_reqs(index)" @click_talent="on_click_talent" @hover_talent="on_hover_talent" />
-        <div style="clear: both;"></div>
+    <ol v-show="expanded" :class="{group:true ,locked_group: !p_data.unlocked}">
+        <TalentIcon v-for="(t, index) in p_data.talents" :key="t.name" :pIndex="index" :pData="t" :pReq="this.meet_category_reqs(index)" @click-talent="on_click_talent" @hover-talent="on_hover_talent" />
     </ol>
   </li>
 </template>
@@ -88,32 +86,34 @@ export default {
     padding-inline-start: 20px;
   }
 
-  li {
-      list-style: none;
-  }
-
-  p {
-      display: inline
+  .talent-group {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
   }
 
   .title {
-      float: left
-  }
-
-  .mastery {
-      float :left
+    display: flex;
   }
 
   .unlocked {
     margin-left: 5px;
+    margin-top:0%;
+    margin-bottom: 0%;
     color: #00FF00;
     font-weight: bold;
   }
 
   .locked {
     margin-left: 5px;
+    margin-top:0%;
+    margin-bottom: 0%;
     color: #969696;
     font-weight: bold;
+  }
+
+  .group {
+    display:flex;
   }
   
   .locked_group {

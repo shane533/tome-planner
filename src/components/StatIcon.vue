@@ -1,8 +1,10 @@
 <template>
-  <li class="stat_icon">
+  <li class="stat-icon">
     <img class="icon" :src = p_img_url @click="on_click_stat" @mouseover="on_hover_stat">
-    <p :class="points_class">{{p_total}}({{p_base}}) </p>
-    <button class="btn" id="max_btn" @click="on_click_max_stat">{{max_or_clear}}</button>
+    <div class="desc">
+      <p :class="points_class">{{p_total}}({{p_base}}) </p>
+      <button class="btn" id="max-btn" @click="on_click_max_stat">{{max_or_clear}}</button>
+    </div>
   </li>
 </template>
 
@@ -52,16 +54,31 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
-  #max_btn {
+  #max-btn {
     border-width: 1px;
+  }
+
+  .stat-icon {
+    list-style: none;
+    display:flex;
+    flex-direction: column;
+  }
+
+  .desc {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .max {
     color: #969696;
+    margin-top: 0%;
   }
 
   .normal {
     color: white;
+    margin-top: 0%;
+    margin-bottom: 0%;
   }
 
   .icon {
@@ -70,13 +87,4 @@ export default {
     border-color: #969696;
   }
 
-  p {
-    margin-top: 0%;
-    float:left;
-  }
-
-  li {
-    list-style: none;
-    align-self: center;
-  }
 </style>

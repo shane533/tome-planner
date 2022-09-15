@@ -186,6 +186,7 @@
     }
     
     .talent_desc {
+        width:inherit;
         text-align: left;
     }
 

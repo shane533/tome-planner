@@ -1,88 +1,92 @@
 <template>
   <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
-  <div class="title">
-    <h1>{{title}}</h1>
-    <p>For ToME Version: {{tomeVersion}}</p>
-  </div>
-  <div class="debug">
-    <h3>URL:Https://shane533.github.io/tome-planner?build={{build}}</h3>
-    <button class="btn" id="share-button" @click="clickShareButton">Share</button>
-  </div>
-  <div class="select-panel">
-    <select id="race-select" v-model="raceSelected">
-      <option disabled value="">select a race</option>
-      <template v-for="r in raceConfig" :key="r.short_name">
-        <option v-if="isAvaliableRace(r.short_name)" :value="r.short_name">
-          {{r.name}}
-        </option>
-      </template>
-    </select>
-    <select id="class-select" v-model="classSelected">
-      <option disabled value="">select a class</option>
-      <template v-for="c in classConfig" :key="c.short_name">
-        <option v-if="isAvaliableClass(c.short_name)" :value="c.short_name">{{c.name}}</option>
-      </template>
-    </select>
-  </div>
-  <div class="stat-panel">
-    <button class="btn" id="stat-button">Stats:{{totalStatPoints}}</button>
-    <ol class="stat-list">
-      <StatIcon 
-        v-for="a in stats" 
-        :key="a.name" 
-        :p_id="a.name.toLowerCase()" 
-        :p_img_url="a.img_url" 
-        :p_base="a.base" 
-        :p_total="a.total"  
-        @click_stat="clickStatIcon" 
-        @hover_stat="hoverStatIcon" 
-        @max_stat="maximizeOrClearStat"
-      />
-    </ol>
-  </div>
-  <div class="talents-panel">
-    <div class="talents-buttons_panel">
-      <button class="btn" id="c-points-btn">Class Points:{{totalCPoints}}</button>
-      <button class="btn" id="t-points-btn">Category Points:{{totalCategoryPoints}}</button>
-      <button class="btn" id="g-points-btn">Generic Points:{{totalGPoints}}</button>
-      <div class="talents-tree-panel">
-        <div class="vertical-line"></div>
-        <TalentTree 
-          :p_type="'class'" 
-          :p_talents_groups="cTalentsTree" 
-          @click_talent="clickTalentIcon" 
-          @hover_talent="hoverTalentIcon" 
-          @click_mastery="clickTalentMastery" 
-          @reset_talent_group="resetTalentGroup"
+  <div class="main-container">
+    <div class="title">
+      <h1>{{title}}</h1>
+      <p>For ToME Version: {{tomeVersion}}</p>
+    </div>
+    <div class="share">
+      <h3>URL:Https://shane533.github.io/tome-planner?build={{build}}</h3>
+      <button class="btn" id="share-button" @click="generateShareURL">Share</button>
+    </div>
+    <div class="select-panel">
+      <select id="race-select" v-model="raceSelected">
+        <option disabled value="">select a race</option>
+        <template v-for="r in raceConfig" :key="r.short_name">
+          <option v-if="isAvaliableRace(r.short_name)" :value="r.short_name">
+            {{r.name}}
+          </option>
+        </template>
+      </select>
+      <select id="class-select" v-model="classSelected">
+        <option disabled value="">select a class</option>
+        <template v-for="c in classConfig" :key="c.short_name">
+          <option v-if="isAvaliableClass(c.short_name)" :value="c.short_name">{{c.name}}</option>
+        </template>
+      </select>
+    </div>
+    <div class="core-panel">
+      <div class="stat-panel">
+        <button class="btn" id="stat-button">Stats:{{totalStatPoints}}</button>
+        <ol class="stat-list">
+          <StatIcon 
+            v-for="a in stats" 
+            :key="a.name" 
+            :p_id="a.name.toLowerCase()" 
+            :p_img_url="a.img_url" 
+            :p_base="a.base" 
+            :p_total="a.total"  
+            @click_stat="clickStatIcon" 
+            @hover_stat="hoverStatIcon" 
+            @max_stat="maximizeOrClearStat"
+          />
+        </ol>
+      </div>
+      <div class="talents-panel">
+        <div class="talents-buttons-panel">
+          <button class="btn" id="c-points-btn">Class Points:{{totalCPoints}}</button>
+          <button class="btn" id="t-points-btn">Category Points:{{totalCategoryPoints}}</button>
+          <button class="btn" id="g-points-btn">Generic Points:{{totalGPoints}}</button>
+        </div>
+        <div class="talents-tree-panel">
+          <div class="vertical-line"></div>
+          <TalentTree 
+            :p_type="'class'" 
+            :p_talents_groups="cTalentsTree" 
+            @click_talent="clickTalentIcon" 
+            @hover_talent="hoverTalentIcon" 
+            @click_mastery="clickTalentMastery" 
+            @reset_talent_group="resetTalentGroup"
+          />
+          <div class="vertical-line"></div>
+          <TalentTree 
+            :p_type="'generic'" 
+            :p_talents_groups="gTalentsTree" 
+            @click_talent="clickTalentIcon" 
+            @hover_talent="hoverTalentIcon" 
+            @click_mastery="clickTalentMastery" 
+            @reset_talent_group="resetTalentGroup"
+          />
+          <div class="vertical-line"></div>
+          <!-- <div style="clear: both;"></div> -->
+        </div>
+      </div>
+      <div class="desc-panel">
+        <TalentDesc 
+          v-if="isSelectingTalent" 
+          :p_data="this.selectedItem"
         />
-        <div class="vertical-line"></div>
-        <TalentTree 
-          :p_type="'generic'" 
-          :p_talents_groups="gTalentsTree" 
-          @click_talent="clickTalentIcon" 
-          @hover_talent="hoverTalentIcon" 
-          @click_mastery="clickTalentMastery" 
-          @reset_talent_group="resetTalentGroup"
+        <InscriptionProdigyDiv 
+          :p_inscription_slots="this.inscriptionSlots" 
+          :p_prodigy_config_1="this.getProdigyConfig(1)" 
+          :p_prodigy_config_2="this.getProdigyConfig(2)" 
+          @click_inscription_btn="unlockInscriptionSlot" 
+          @click_prodigy_slot="openProdigyPanel"
         />
-        <div class="vertical-line"></div>
-        <!-- <div style="clear: both;"></div> -->
       </div>
     </div>
+    <ProdigyPanel v-show="isShowingProdigy" :p_data="this.prodigyConfig"></ProdigyPanel>
   </div>
-  <div class="desc-panel">
-    <TalentDesc 
-      v-if="isSelectingTalent" 
-      :p_data="this.selectedItem"
-    />
-    <InscriptionProdigyDiv 
-      :p_inscription_slots="this.inscriptionSlots" 
-      :p_prodigy_config_1="this.getProdigyConfig(1)" 
-      :p_prodigy_config_2="this.getProdigyConfig(2)" 
-      @click_inscription_btn="unlockInscriptionSlot" 
-      @click_prodigy_slot="openProdigyPanel"
-    />
-  </div>
-  <ProdigyPanel v-show="isShowingProdigy" :p_data="this.prodigyConfig"></ProdigyPanel>
   <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
   <!-- <img src="./assets/talents/absorb_life.png"> -->
   <!-- <TalentIcon cur_level = 1 max_level = 5 :img_url = img_icon  /> -->
@@ -712,63 +716,54 @@ export default {
   margin-top: 60px;
 }
 
-#c-points-btn {
-  float: left;
-  margin-left: 3%
+.main-conatiner {
+  display: flex;
+  flex-direction: column;
 }
 
-#t-points-btn {
-  float: center;
+.core-panel {
+  display: flex;
+  justify-content: center;
+  margin-top: 1%;
 }
 
-#g-points-btn {
-  float: right;
-  margin-right: 3%;
+.stat-panel {
+  text-align: center;
+}
+
+.talents-panel {
+  margin-left: 1%;
+  margin-right: 1%;
+  display: flex;
+  flex-direction: column;
+}
+
+.talents-buttons-panel {
+  display: flex;
+  justify-content: space-between;
+}
+
+.talents-tree-panel {
+  margin-top:1%;
+  display: flex;
+  justify-content: center;
+}
+
+.desc-panel {
+  width: 50%;
+  display:flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .vertical-line {
-  float:left;
-  height: 700px;
+  height: inherit;
   width : 20px;
   background-image: url("./assets/ui/border_vert_middle.png");
 }
 
 .vertical-line ::before {
   background-image: url("./assets/ui/border_vert_top.png");
-}
-
-.stat-panel {
-  float: left;
-  left: 0px;
-  position: absolute;
-  width: 6%;
-  text-align: center;
-  padding-left: 1%;
-}
-
-.stat-list {
-  margin-top: 25px;
-}
-
-.talents-panel {
-  float: left;
-  /* position: relative; */
-  margin-left: 6%;
-  margin-right: 34%;
-  width: 60%;
-}
-
-.talents-tree-panel {
-  width:inherit;
-  margin-top: 1%;
-}
-
-.desc-panel {
-  /* float: left */
-  left: unset;
-  right: 0px;
-  position: absolute;
-  width: 34%;
 }
 
 .variable {
@@ -791,10 +786,6 @@ export default {
   font-size: 0.95em;
   font-family: inherit;
   align-self: center;
-}
-
-ol {
-  padding-inline-start: 5px;
 }
 
 

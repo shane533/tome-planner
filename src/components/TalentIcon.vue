@@ -1,7 +1,7 @@
 <template>
-  <li class="talent_icon">
-    <img :class="{icon:true, dark:!p_req}"  :src = p_data.img_url @click="on_click_talent" @mouseover="on_hover_talent">
-    <p :class="{max: p_data.cur_level==p_data.max_level, locked:!p_req}">{{p_data.cur_level}}/{{p_data.max_level}}</p>
+  <li class="talent-icon">
+    <img :class="{icon:true, dark:!pReq}"  :src = pData.img_url @click="onClickTalent" @mouseover="onHoverTalent">
+    <p :class="{level:true, max: pData.cur_level==pData.max_level, locked:!pReq}">{{pData.cur_level}}/{{pData.max_level}}</p>
   </li>
 </template>
 
@@ -11,24 +11,24 @@
 export default {
   name: 'TalentIcon',
   props: {
-    p_data: Object,
-    p_index: Number,
-    p_req: Boolean 
+    pData: Object,
+    pIndex: Number,
+    pReq: Boolean 
   },
 
-  emits: ['click_talent', 'hover_talent'],
+  emits: ['click-talent', 'hover-talent'],
 
   methods: {
-    on_click_talent() {
+    onClickTalent() {
       // console.log("TalentIcon.Click talent:" + this.p_name)
-      if (this.p_req) {
-        this.$emit("click_talent", this.p_index)
+      if (this.pReq) {
+        this.$emit("click-talent", this.pIndex)
       }
     },
 
-    on_hover_talent() {
+    onHoverTalent() {
       // console.log("TalentIcon.Hover: " + this.p_req)
-      this.$emit("hover_talent", this.p_index)
+      this.$emit("hover-talent", this.pIndex)
     }
   }
 }
@@ -36,7 +36,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  p {
+  .level {
     margin-top:0%
   }
 
@@ -58,9 +58,8 @@ export default {
     color : red
   }
 
-  li {
+  .talent-icon {
     list-style: none;
-    float:left;
     margin-left : 5px;
   }
 </style>

@@ -1,6 +1,5 @@
 <template>
   <div class="talent_tree">
-    <!-- <p v-for="t in p_talents_groups" :key="t.name"> {{t.name}} + {{t.talents_list}}</p> -->
     <ol>
         <TalentGroup v-for="t of p_talents_groups" :key="t.type" :p_data="t" @click_talent="on_click_talent" @hover_talent="on_hover_talent" @reset_talent_group="on_reset_talent_group" @click_mastery="on_click_mastery" /> 
     </ol>
@@ -49,7 +48,6 @@ export default {
   .talent_tree {
     width: 45%;
     height: 700px;
-    float: left;
     overflow: auto;
   }
 
