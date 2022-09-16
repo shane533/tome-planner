@@ -1,24 +1,24 @@
 <template>
-    <div class="talent_desc">
-        <p id="desc_title">{{p_data.name}}</p>
-        <p id="talent_level">Current talent level: {{p_data.cur_level}}</p>
-        <ol id="requre_list">
-            <li :style="{color: p_data.unlocked ? '#00ff00' : 'red'}">Talent category known</li>
-            <li v-if="!this.p_data.no_levelup_category_deps && p_data.index!=0" :style="{color: p_data.category_dep ? '#00ff00' : 'red'}">Lower talents of the same category: {{p_data.index}}</li>
-            <li v-if="stat_req!=''">{{stat_req}}</li>
-            <li>Level: {{level_str}}</li>
+    <div class="talent-desc">
+        <p id="desc-title">{{pData.name}}</p>
+        <p id="talent-level">Current talent level: {{pData.cur_level}}</p>
+        <ol class="require-list">
+            <li :style="{color: pData.unlocked ? '#00ff00' : 'red'}">Talent category known</li>
+            <li v-if="!this.pData.no_levelup_category_deps && pData.index!=0" :style="{color: pData.category_dep ? '#00ff00' : 'red'}">Lower talents of the same category: {{pData.index}}</li>
+            <li v-if="statReq!=''">{{statReq}}</li>
+            <li>Level: {{levelStr}}</li>
         </ol>
-        <p style="color:#00ff00" id="effect_level"><span class="c1">Effect talent level:</span> {{effect_level_str}}</p>
-        <p style="color:#00ff00"><span class="c1">Use mode: </span>{{use_mode_str}}</p>
+        <p style="color:#00ff00" id="effect-level"><span class="c1">Effect talent level:</span> {{effectLevelStr}}</p>
+        <p style="color:#00ff00"><span class="c1">Use mode: </span>{{useModeStr}}</p>
         <p style="color:#00ff00" v-for="c of costs" :key="c.desc"><span class="c1">{{c.desc}} </span>{{c.value}} </p>
-        <!-- <p style="color:#00ff00" v-if="this.p_data.cost"><span class="c1" >{{resource_str}}</span>{{cost_str}}</p> -->
-        <p v-if="this.p_data.range"><span class="c1">Range: </span>{{range_str}}</p>
-        <p v-if="this.p_data.cooldown"><span class="c1">Cooldown: </span>{{cd_str}}</p>
-        <p v-if="this.p_data.proj_speed"><span class="c1">Travel Speed: </span>{{tra_spd_str}}</p>
-        <p v-if="this.p_data.use_speed"><span class="c1">Use Speed: </span>{{use_spd_str}}</p>
-        <p v-if="is_str!=''"><span class="c1" >Is: </span>{{is_str}}</p>
-        <p class="c1" id="desc_head">Description:</p>
-        <div v-html="info_str"></div>
+        <!-- <p style="color:#00ff00" v-if="this.pData.cost"><span class="c1" >{{resource_str}}</span>{{cost_str}}</p> -->
+        <p v-if="this.pData.range"><span class="c1">Range: </span>{{rangeStr}}</p>
+        <p v-if="this.pData.cooldown"><span class="c1">Cooldown: </span>{{cdStr}}</p>
+        <p v-if="this.pData.proj_speed"><span class="c1">Travel Speed: </span>{{travelSpeedStr}}</p>
+        <p v-if="this.pData.use_speed"><span class="c1">Use Speed: </span>{{useSpeedStr}}</p>
+        <p v-if="isStr!=''"><span class="c1" >Is: </span>{{isStr}}</p>
+        <p class="c1" id="desc-head">Description:</p>
+        <div v-html="infoStr"></div>
 
     </div>    
 </template>
@@ -30,22 +30,22 @@
   export default {
     name: 'TalentDesc',
     props: {
-      p_data: Object
+      pData: Object
     },
 
     computed: {
-        effect_level_str(){
+        effectLevelStr(){
             let arr = []
             for (let i=1; i<6; i++) {
-                arr.push( (i*parseFloat(this.p_data.mastery)).toFixed(1) )
+                arr.push( (i*parseFloat(this.pData.mastery)).toFixed(1) )
             }
             return arr.join(" ")
         },
 
-        level_str (){
-            if(this.p_data.require) {
+        levelStr (){
+            if(this.pData.require) {
                 let t = []
-                for (let r of this.p_data.require) {
+                for (let r of this.pData.require) {
                     t.push(r.split(",")[0].split(" ")[1])
                 }
                 return t.join(", ")
@@ -54,15 +54,15 @@
             }
         },
 
-        stat_req() {
-            if (this.p_data.require) {
-                let tmp = this.p_data.require[0].split(", ")
+        statReq() {
+            if (this.pData.require) {
+                let tmp = this.pData.require[0].split(", ")
                 if (tmp.length == 1) {
                     return ""
                 } else {
                     let stat = tmp[1].split(" ")[0]
                     let t = []
-                    for (let r of this.p_data.require) {
+                    for (let r of this.pData.require) {
                         t.push(r.split(", ")[1].split(" ")[1])
                     }
                     return stat + " " + t.join(", ")
@@ -72,42 +72,42 @@
             }
         }, 
 
-        use_mode_str() {
-            if (this.p_data.mode) {
-                return this.cap_first(this.p_data.mode)
+        useModeStr() {
+            if (this.pData.mode) {
+                return this.capFirst(this.pData.mode)
             } else {
                 return "Activated"
             }
         },
 
-        range_str() {
-            return this.parse_data(this.p_data.range)
+        rangeStr() {
+            return this.parseData(this.pData.range)
         },
 
-        cd_str() {
-            return this.parse_data(this.p_data.cooldown)
+        cdStr() {
+            return this.parseData(this.pData.cooldown)
             
         },
 
-        tra_spd_str() {
-            let a = parseFloat(this.p_data.proj_speed) * 100
+        travelSpeedStr() {
+            let a = parseFloat(this.pData.proj_speed) * 100
             return a.toString() + "% of base"
         },
 
-        use_spd_str() {
-            return this.p_data.use_speed
+        useSpeedStr() {
+            return this.pData.use_speed
         },
 
         costs() {
             let ret = []
             for (let r in Const.RESOURCE_TYPES) {
-                if (this.p_data[r] || this.p_data["sustain_"+r] ){
-                    let value = this.p_data[r] ? this.p_data[r] : this.p_data["sustain_"+r]
+                if (this.pData[r] || this.pData["sustain_"+r] ){
+                    let value = this.pData[r] ? this.pData[r] : this.pData["sustain_"+r]
                     let obj = {}
                     obj["value"] = Math.abs(value)
                     let str =""
                     str = Const.RESOURCE_TYPES[r]
-                    if (this.p_data.mode == Const.USE_MODE_SUSTAIN) {
+                    if (this.pData.mode == Const.USE_MODE_SUSTAIN) {
                         str = "sustain " + str
                     } 
                     if (value > 0) {
@@ -115,14 +115,14 @@
                     } else {
                         str += " gain: "
                     }
-                    obj["desc"] = this.cap_first(str)
+                    obj["desc"] = this.capFirst(str)
                     ret.push(obj)
                 }
             }
             return ret
         },
 
-        is_str() {
+        isStr() {
             let ret=""
             let pairs = {
                 is_antimagic : "an antimagic ability",
@@ -132,7 +132,7 @@
             }
             let out= []
             for (let k in pairs) {
-                if (this.p_data[k]) {
+                if (this.pData[k]) {
                     out.push(pairs[k])
                 }
             }
@@ -146,9 +146,9 @@
             return ret
         },
 
-        info_str() {
-            if(this.p_data.info_text) {
-                return "<p style=\"margin-top: 0px;\"" + this.p_data.info_text.slice(2)
+        infoStr() {
+            if(this.pData.info_text) {
+                return "<p style=\"margin-top: 0px;\"" + this.pData.info_text.slice(2)
             } else {
                 return ""
             }
@@ -156,7 +156,7 @@
     },
   
     methods: {
-        parse_data(str) {
+        parseData(str) {
             if (typeof(str)=="string" && str.startsWith("<")) {
                 let tmp = str.slice(1,-1).split(">")
                 let tmp2 = tmp[tmp.length-1].split("<")[0]
@@ -166,7 +166,7 @@
             }
         },
 
-        cap_first(str) {
+        capFirst(str) {
             return str.charAt(0).toUpperCase() + str.slice(1)
         }
     }
@@ -176,16 +176,16 @@
   <!-- Add "scoped" attribute to limit CSS to this component only -->
   <style scoped>
 
-    #desc_title {
+    #desc-title {
         color:#ffd800;
         margin-bottom:3%;
     }
 
-    #desc_head {
+    #desc-head {
         margin-top:10px;
     }
     
-    .talent_desc {
+    .talent-desc {
         width:inherit;
         text-align: left;
     }
@@ -197,15 +197,17 @@
     .c1 {
         color: #4ce675;
     }
+    
+    .require-list {
+        list-style:square;
+        margin-top: 0%;
+        margin-bottom: 0%;
+        padding-inline-start: 10px;
+    }
+    
     p {
         margin-top: 0%;
         margin-bottom: 0%;
-    }
-
-    ol {
-        list-style:square;
-        margin-top: 0%;
-        margin-bottom: 0%
     }
 
     li {

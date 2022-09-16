@@ -32,13 +32,13 @@
           <StatIcon 
             v-for="a in stats" 
             :key="a.name" 
-            :p_id="a.name.toLowerCase()" 
-            :p_img_url="a.img_url" 
-            :p_base="a.base" 
-            :p_total="a.total"  
-            @click_stat="clickStatIcon" 
-            @hover_stat="hoverStatIcon" 
-            @max_stat="maximizeOrClearStat"
+            :pId="a.name.toLowerCase()" 
+            :pImgUrl="a.img_url" 
+            :pBase="a.base" 
+            :pTotal="a.total"  
+            @click-stat="assignStatPoints" 
+            @hover-stat="hoverStatIcon" 
+            @max-stat="maximizeOrClearStat"
           />
         </ol>
       </div>
@@ -51,37 +51,37 @@
         <div class="talents-tree-panel">
           <div class="vertical-line"></div>
           <TalentTree 
-            :p_type="'class'" 
-            :p_talents_groups="cTalentsTree" 
-            @click_talent="clickTalentIcon" 
-            @hover_talent="hoverTalentIcon" 
-            @click_mastery="clickTalentMastery" 
-            @reset_talent_group="resetTalentGroup"
+            :pType="'class'" 
+            :pTalentsGroups="cTalentsTree" 
+            @click-talent="clickTalentIcon" 
+            @hover-talent="hoverTalentIcon" 
+            @click-mastery="clickTalentMastery" 
+            @reset-talent-group="resetTalentGroup"
           />
           <div class="vertical-line"></div>
           <TalentTree 
-            :p_type="'generic'" 
-            :p_talents_groups="gTalentsTree" 
-            @click_talent="clickTalentIcon" 
-            @hover_talent="hoverTalentIcon" 
-            @click_mastery="clickTalentMastery" 
-            @reset_talent_group="resetTalentGroup"
+            :pType="'generic'" 
+            :pTalentsGroups="gTalentsTree" 
+            @click-talent="clickTalentIcon" 
+            @hover-talent="hoverTalentIcon" 
+            @click-mastery="clickTalentMastery" 
+            @reset-talent-group="resetTalentGroup"
           />
           <div class="vertical-line"></div>
           <!-- <div style="clear: both;"></div> -->
         </div>
-      </div>
+    </div>
       <div class="desc-panel">
         <TalentDesc 
           v-if="isSelectingTalent" 
-          :p_data="this.selectedItem"
+          :pData="this.selectedItem"
         />
         <InscriptionProdigyDiv 
-          :p_inscription_slots="this.inscriptionSlots" 
-          :p_prodigy_config_1="this.getProdigyConfig(1)" 
-          :p_prodigy_config_2="this.getProdigyConfig(2)" 
-          @click_inscription_btn="unlockInscriptionSlot" 
-          @click_prodigy_slot="openProdigyPanel"
+          :pInscriptionSlots="this.inscriptionSlots" 
+          :pProdigyConfig1="this.getProdigyConfig(1)" 
+          :pProdigyConfig2="this.getProdigyConfig(2)" 
+          @click-inscription-btn="unlockInscriptionSlot" 
+          @click-prodigy-slot="openProdigyPanel"
         />
       </div>
     </div>
@@ -148,13 +148,6 @@ export default {
       // console.log("update_desc_panel " + this.desc)
     },
 
-    clickStatIcon(key)
-    {
-      if (this.stats[key].base < Const.MAX_POINTS_PER_STAT) {
-        this.assignStatPoints(key)
-      }
-    },
-
     hoverStatIcon(key)
     {
       this.selectedItem = this.stats[key]
@@ -163,9 +156,11 @@ export default {
 
     assignStatPoints(key)
     {
-      this.stats[key].base += 1
-      this.stats[key].total += 1
-      this.totalStatPoints -= 1
+      if (this.stats[key].base < Const.MAX_POINTS_PER_STAT && this.totalStatPoints > 0) {
+        this.stats[key].base += 1
+        this.stats[key].total += 1
+        this.totalStatPoints -= 1
+      }
     },
 
     maximizeOrClearStat(key)
@@ -178,7 +173,9 @@ export default {
         this.totalStatPoints += delta
       } else {
         //Maximize
+        console.log("3333")
         if (this.totalStatPoints <= 0) {
+          console.log("9999999")
           return
         }
         let delta = Const.MAX_POINTS_PER_STAT - this.stats[key].base
@@ -404,10 +401,6 @@ export default {
           this.stats[k].init = this.stats[k].base
         }
       }
-
-      // reseting prodigies
-      // this.prodigy_config = {}
-      // import(`@/assets/data/${this.tome_version}/talents.uber-1.json`, {assert: { type: 'json' }}).then(this.on_load_prodigy)
 
       // reseting talents
       this.cTalentsTree = {}
@@ -716,7 +709,7 @@ export default {
   margin-top: 60px;
 }
 
-.main-conatiner {
+.main-container {
   display: flex;
   flex-direction: column;
 }
@@ -724,18 +717,26 @@ export default {
 .core-panel {
   display: flex;
   justify-content: center;
-  margin-top: 1%;
+  gap: 1%;
+  margin-top:10px;
 }
 
 .stat-panel {
   text-align: center;
+  /* flex: 0 0 100px; */
+}
+
+.stat-list {
+  padding-inline-start: 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .talents-panel {
-  margin-left: 1%;
-  margin-right: 1%;
   display: flex;
   flex-direction: column;
+  flex: 1 1 820px;
 }
 
 .talents-buttons-panel {
@@ -750,15 +751,15 @@ export default {
 }
 
 .desc-panel {
-  width: 50%;
   display:flex;
   flex-direction: column;
   justify-content: space-between;
+  flex: 1 1 500px;
 }
 
 .vertical-line {
   height: inherit;
-  width : 20px;
+  flex : 0 0 20px;
   background-image: url("./assets/ui/border_vert_middle.png");
 }
 

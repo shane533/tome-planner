@@ -1,7 +1,7 @@
 <template>
-  <div class="talent_tree">
+  <div class="talent-tree">
     <ol>
-        <TalentGroup v-for="t of p_talents_groups" :key="t.type" :p_data="t" @click_talent="on_click_talent" @hover_talent="on_hover_talent" @reset_talent_group="on_reset_talent_group" @click_mastery="on_click_mastery" /> 
+        <TalentGroup v-for="t of pTalentsGroups" :key="t.type" :pData="t" @click-talent="onClickTalent" @hover-talent="onHoverTalent" @reset-talent-group="onResetTalentGroup" @click-mastery="onClickMastery" /> 
     </ol>
   </div>
 </template>
@@ -13,31 +13,31 @@ import TalentGroup from './TalentGroup.vue';
 export default {
     name: "TalentTree",
     props: {
-        p_type : String,
-        p_talents_groups: Object
+        pType : String,
+        pTalentsGroups: Object
     },
     components: { TalentGroup },
 
     methods : {
     
-      on_click_mastery(t_group_name)
+      onClickMastery(groupName)
       {
-        console.log("TalentTree.onClickMastery: " + t_group_name)
-        this.$emit("click_mastery", t_group_name, this.p_type)
+        console.log("TalentTree.onClickMastery: " + groupName)
+        this.$emit("click-mastery", groupName, this.pType)
       },
 
-      on_click_talent(t_name, t_group_name) {
-        console.log("TalentTree.onClickTalent" + t_name + "/" +  t_group_name + "/" + this.p_type)
-        this.$emit("click_talent", t_name, t_group_name, this.p_type)
+      onClickTalent(name, groupName) {
+        console.log("TalentTree.onClickTalent" + name + "/" +  groupName + "/" + this.p_type)
+        this.$emit("click-talent", name, groupName, this.pType)
       },
 
-      on_hover_talent(t_name, t_group_name) {
+      onHoverTalent(name, groupName) {
         // console.log("TalentTree.onHoverTalent" + t_name + "/" +  t_group_name + "/" + this.p_type)
-        this.$emit("hover_talent", t_name, t_group_name, this.p_type)
+        this.$emit("hover-talent", name, groupName, this.pType)
       },
 
-      on_reset_talent_group(t_group_name) {
-        this.$emit("reset_talent_group", t_group_name, this.p_type)
+      onResetTalentGroup(groupName) {
+        this.$emit("reset-talent-group", groupName, this.pType)
       }
     }
 }
@@ -45,24 +45,24 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  .talent_tree {
-    width: 45%;
+  .talent-tree {
+    flex: 1 0 400px;
     height: 700px;
     overflow: auto;
   }
 
-  .talent_tree::-webkit-scrollbar {
+  .talent-tree::-webkit-scrollbar {
     width:20px;
   }
 
-  .talent_tree::-webkit-scrollbar-track {
+  .talent-tree::-webkit-scrollbar-track {
     background-image: url("../assets/ui/scrollbar_top.png"), url("../assets/ui/scrollbar.png"), url("../assets/ui/scrollbar_bottom.png");
     background-repeat: no-repeat, repeat, no-repeat;
     background-position-y: top, center, bottom;
     background-size: auto, 80%, auto;
   }
   
-  .talent_tree::-webkit-scrollbar-thumb {
+  .talent-tree::-webkit-scrollbar-thumb {
     background-image: url("../assets/ui/scrollbar-sel.png");
     background-repeat: no-repeat;
   }

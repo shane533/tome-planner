@@ -1,9 +1,14 @@
 <template>
   <li class="stat-icon">
-    <img class="icon" :src = p_img_url @click="on_click_stat" @mouseover="on_hover_stat">
+    <img class="icon" 
+      :src = pImgUrl
+      width="64"
+      height="64" 
+      @click="onClickStat" 
+      @mouseover="onHoverStat">
     <div class="desc">
-      <p :class="points_class">{{p_total}}({{p_base}}) </p>
-      <button class="btn" id="max-btn" @click="on_click_max_stat">{{max_or_clear}}</button>
+      <p :class="pointsClass">{{pTotal}}({{pBase}}) </p>
+      <button class="btn" id="max-btn" @click="onClickMaxStat">{{maxOrClear}}</button>
     </div>
   </li>
 </template>
@@ -15,37 +20,37 @@
 export default {
   name: 'StatIcon',
   props: {
-    p_id: String,
-    p_base: Number,
-    p_total: Number,
-    p_img_url: URL
+    pId: String,
+    pBase: Number,
+    pTotal: Number,
+    pImgUrl: URL
   },
 
   methods: {
-    on_click_stat()
+    onClickStat()
     {
       console.log("Click stat button")
-      this.$emit("click_stat", this.p_id)
+      this.$emit("click-stat", this.pId)
     },
 
-    on_hover_stat()
+    onHoverStat()
     {
-      this.$emit("hover_stat", this.p_id)
+      this.$emit("hover-stat", this.pId)
     },
 
-    on_click_max_stat()
+    onClickMaxStat()
     {
-      this.$emit("max_stat", this.p_id)
+      this.$emit("max-stat", this.pId)
     }
   },
 
   computed: {
-    points_class() {
-      return this.p_base >= 60 ? "max" : "normal" 
+    pointsClass() {
+      return this.pBase >= 60 ? "max" : "normal" 
     },
 
-    max_or_clear() {
-      return this.p_base >= 60 ? "C" : "M"
+    maxOrClear() {
+      return this.pBase >= 60 ? "C" : "M"
     }
   }
 }
@@ -73,6 +78,7 @@ export default {
   .max {
     color: #969696;
     margin-top: 0%;
+    margin-bottom: 0%;
   }
 
   .normal {
@@ -85,6 +91,7 @@ export default {
     border-style: solid;
     border-width: 2px;
     border-color: #969696;
+    flex: 0 0 auto;
   }
 
 </style>

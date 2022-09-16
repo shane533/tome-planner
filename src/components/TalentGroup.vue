@@ -1,15 +1,15 @@
 <template>
   <li class="talent-group">
     <div class="title">
-        <label :for="p_data.type">
-          <img :src="expand_img">
+        <label :for="pData.type">
+          <img :src="expandImg">
         </label>
-        <input :id="p_data.type" type="checkbox" style="display:none" v-model="expanded"/>
-        <p :class="name_class" @click="on_click_mastery">{{p_data.category}} / {{p_data.name}} ({{p_data.mastery.toFixed(2)}}) </p>
-        <button class="btn" id="reset" @click="on_click_reset_button">X</button>
+        <input :id="pData.type" type="checkbox" style="display:none" v-model="expanded"/>
+        <p :class="nameClass" @click="onClickMastery">{{pData.category}} / {{pData.name}} ({{pData.mastery.toFixed(2)}}) </p>
+        <button class="btn" id="reset" @click="onClickResetButton">X</button>
     </div>
-    <ol v-show="expanded" :class="{group:true ,locked_group: !p_data.unlocked}">
-        <TalentIcon v-for="(t, index) in p_data.talents" :key="t.name" :pIndex="index" :pData="t" :pReq="this.meet_category_reqs(index)" @click-talent="on_click_talent" @hover-talent="on_hover_talent" />
+    <ol v-show="expanded" :class="{'group':true, 'locked-group': !pData.unlocked}">
+        <TalentIcon v-for="(t, index) in pData.talents" :key="t.name" :pIndex="index" :pData="t" :pReq="this.meetCategoryReqs(index)" @click-talent="onClickTalent" @hover-talent="onHoverTalent" />
     </ol>
   </li>
 </template>
@@ -21,60 +21,60 @@ import TalentIcon from './TalentIcon.vue';
 export default {
     name: "TalentGroup",
     props: {
-        p_data: Object
+        pData: Object
     },
     components: { TalentIcon },
-    emits: ['click_talent', 'hover_talent'],
+    emits: ['click-talent', 'hover-talent'],
 
     data() {
       return {
-        expanded: this.p_data.unlocked
+        expanded: this.pData.unlocked
       }
     },
 
     computed:
     {
-      expand_img() {
+      expandImg() {
         return this.expanded ? require("../assets/ui/minus.png") : require("../assets/ui/plus.png")
       },
-      name_class() {
-        return this.p_data.unlocked ? "unlocked" : "locked"
+      nameClass() {
+        return this.pData.unlocked ? "unlocked" : "locked"
       }
     },
 
     methods: {
 
-      meet_category_reqs(index)
+      meetCategoryReqs(index)
       {
-        if (index == 0 || this.p_data.talents[index].no_levelup_category_deps) {
+        if (index == 0 || this.pData.talents[index].no_levelup_category_deps) {
           return true
         } else {
-          return this.p_data.talents[index-1].cur_level > 0
+          return this.pData.talents[index-1].cur_level > 0
         }
       },
 
-      on_click_mastery()
+      onClickMastery()
       {
         console.log("TalentGroup.click mastery")
-        this.$emit("click_mastery", this.p_data.type)
+        this.$emit("click-mastery", this.pData.type)
       },
 
-      on_click_reset_button()
+      onClickResetButton()
       {
-        console.log("TalentGroup.click reset button" + this.p_data.type)
-        this.$emit("reset_talent_group", this.p_data.type)
+        console.log("TalentGroup.click reset button" + this.pData.type)
+        this.$emit("reset-talent-group", this.pData.type)
       },
 
-      on_click_talent(name)
+      onClickTalent(name)
       {
         console.log("TalentGroup.on_click_talent: " + name)
-        this.$emit("click_talent", name, this.p_data.type)
+        this.$emit("click-talent", name, this.pData.type)
       },
 
-      on_hover_talent(index)
+      onHoverTalent(index)
       {
         // console.log("TalentGroup.on_hover_talent: " + index)
-        this.$emit("hover_talent", index, this.p_data.type)
+        this.$emit("hover-talent", index, this.pData.type)
       }
     }
 }
@@ -114,9 +114,11 @@ export default {
 
   .group {
     display:flex;
+    flex-wrap:wrap;
+    width: 360;
   }
   
-  .locked_group {
+  .locked-group {
     filter: brightness(50%);
   }
 

@@ -1,9 +1,9 @@
 <template>
-    <div class="base_panel">
-        <button class="btn" id="inscription_btn" @click="on_click_inscription_btn">Inscription Slots:{{p_inscription_slots}}</button>
+    <div class="base-panel">
+        <button class="btn" id="inscription-btn" @click="onClickInscriptionBtn">Inscription Slots:{{pInscriptionSlots}}</button>
         <p>Prodigies:</p>
-        <img class="icon" id="prodigy_1" :src="p_prodigy_config_1.img_url" @click="on_click_prodigy_slot">
-        <img class="icon" id="prodigy_2" :src="p_prodigy_config_2.img_url" @click="on_click_prodigy_slot">
+        <img class="icon" id="prodigy1" :src="pProdigyConfig1.img_url" @click="onClickProdigySlot">
+        <img class="icon" id="prodigy2" :src="pProdigyConfig2.img_url" @click="onClickProdigySlot">
     </div>
   </template>
   
@@ -14,22 +14,22 @@
   export default {
     name: 'InscriptionProdigyDiv',
     props: {
-      p_inscription_slots: Number,
-      p_prodigy_config_1: Object,
-      p_prodigy_config_2: Object,
+      pInscriptionSlots: Number,
+      pProdigyConfig1: Object,
+      pProdigyConfig2: Object,
     },
-    emits: ['click_inscription_btn', 'click_prodigy_slot'],
+    emits: ['click-inscription-btn', 'click-prodigy-slot'],
 
     methods: {
-      on_click_inscription_btn()
+      onClickInscriptionBtn()
       {
         console.log("Click inscription button")
-        this.$emit("click_inscription_btn")
+        this.$emit("click-inscription-btn")
       },
   
-      on_click_prodigy_slot()
+      onClickProdigySlot()
       {
-        this.$emit("click_prodigy_slot")
+        this.$emit("click-prodigy-slot")
       }
     },
   
@@ -38,7 +38,7 @@
     },
 
     mounted() {
-        console.log(this.p_data)
+        console.log(this.pData)
     }
   }
   </script>
@@ -46,7 +46,7 @@
   <!-- Add "scoped" attribute to limit CSS to this component only -->
   <style scoped>
 
-    #inscription_btn {
+    #inscription-btn {
         align-self:left;
     }
   
@@ -56,8 +56,9 @@
       border-color: #969696;
     }
 
-    .base_panel {
+    .base-panel {
         bottom:0%;
+        display:flex;
     }
   
     p {
