@@ -1,20 +1,24 @@
 <template>
-    <div class="prodigy_panel_bg">
-        <div class="prodigy_panel_inner">
-            <div v-if="p_data && Object.keys(this.p_data) != 0 " class="prodigy_panel">
-                <h3>Prodigies</h3>
-                <div class="prodigy_container">
-                    <ol v-for="pg in this.p_data" :key="pg.type">
-                        <li v-for="p in pg.talents" :key="p.type" :class="isNormalProdigy(p) ? 'show':'hide'"> 
-                            <!-- <p>{{p.name}}</p> -->
-                            <img :src="p.img_url"/>
-                        </li>
-                    </ol>
-                </div>
+    <div class="prodigy-panel-bg">
+        <div class="prodigy-panel-inner">
+            <div class="title-panel">
+
             </div>
-            <div style="clear: both;"></div>
-            <div class="prodigy_desc">
-                <p>Heres some descption</p>
+            <div class="prodigy-panel-content">
+                <div v-if="pData && Object.keys(this.pData) != 0 " class="prodigy-panel">
+                    <h3>Prodigies</h3>
+                    <div class="prodigy-container">
+                        <ol v-for="(pg, index1) in this.pData" :key="pg.type" class="prodigy-column">
+                            <li v-for="(p, index2) in pg.talents" :key="p.type" :class="isNormalProdigy(p) ? 'show':'hide'"> 
+                                <!-- <p>{{p.name}}</p> -->
+                                <img :src="p.img_url" @click="onClickProdigy(index1, index2)" @mouseover="onHoverProdigy(index1, index2)"/>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="prodigy-desc">
+                    <p>Diplaying Prodigy: {{this.selectingProdigy.name}}</p>
+                </div>
             </div>
         </div>
     </div>
@@ -27,15 +31,32 @@
   export default {
     name: 'ProdigyPanel',
     props: {
-      p_data: Object,
-      p_id_1: String,
-      p_id_2: String
+      pData: Object,
+      pId1: String,
+      pId2: String
+    },
+
+    data() {
+        return {
+            selectingProdigy:{}
+        }
     },
   
     methods: {
         isNormalProdigy() {
             return true
+        },
+
+        onClickProdigy(index1, index2) {
+            // console.log("Hover " + index1 + index2)
+            this.$emit("click-prodigy", index1, index2)
+        },
+
+        onHoverProdigy(index1, index2) {
+            // console.log("Hover " + index1 + index2)
+            this.selectingProdigy = this.pData[index1].talents[index2]
         }
+        
     },
   
     computed: {
@@ -51,40 +72,54 @@
         display: none;
     }
     
-    .prodigy_panel_bg {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .prodigy-panel-bg {
         position: fixed;
         top: 0;
         left: 0;
-        height: 100%;
         width: 100%;
-        background-color: rgba(0, 0, 0, 0.4);
-        z-index: 1;
+        height: 100%;
+        overflow: hidden;
+        background-color: rgba(1,1,1,0.8);
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .prodigy_panel_inner {
-        margin-top:10%;
-        width:800px;
+    .prodigy-panel-inner {
+        max-width:1080px;
+        max-height: 1080px;
         text-align: center;
         border-style: solid;
         border-width: 64px;
         border-image: url("../assets/ui/border-dialog.png") 64 fill repeat;
+        display:flex;
+        flex-direction: column;
     }
 
-    .prodigy_container {
-        height: 600px;
+    .prodigy-panel-content {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .prodigy-panel {
+        flex: 1 1 450px;
+    }
+
+    .prodigy-container {
         overflow: auto;
+        display:flex;
+        flex-direction: row;
+        gap:2px;
     }
 
-    .prodigy_desc {
-        float: right
+    .prodigy-desc {
+        flex: 1 1 400px;
     }
 
-    ol {
+    .prodigy-column {
         list-style: none;
-        float:left;
+        padding-inline-start: 0px;
     }
 
     img {

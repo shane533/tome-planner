@@ -1,9 +1,10 @@
 <template>
     <div class="base-panel">
         <button class="btn" id="inscription-btn" @click="onClickInscriptionBtn">Inscription Slots:{{pInscriptionSlots}}</button>
-        <p>Prodigies:</p>
-        <img class="icon" id="prodigy1" :src="pProdigyConfig1.img_url" @click="onClickProdigySlot">
-        <img class="icon" id="prodigy2" :src="pProdigyConfig2.img_url" @click="onClickProdigySlot">
+        <button class="btn" id="prodigy-btn" @click="onClickProdigyBtn">Prodigies:</button>
+        <div class="prodigy-text">
+          <slot></slot>
+        </div>
     </div>
   </template>
   
@@ -15,10 +16,8 @@
     name: 'InscriptionProdigyDiv',
     props: {
       pInscriptionSlots: Number,
-      pProdigyConfig1: Object,
-      pProdigyConfig2: Object,
     },
-    emits: ['click-inscription-btn', 'click-prodigy-slot'],
+    emits: ['click-inscription-btn', 'click-prodigy-btn'],
 
     methods: {
       onClickInscriptionBtn()
@@ -27,14 +26,14 @@
         this.$emit("click-inscription-btn")
       },
   
-      onClickProdigySlot()
+      onClickProdigyBtn()
       {
-        this.$emit("click-prodigy-slot")
+        this.$emit("click-prodigy-btn")
       }
     },
   
     computed: {
-      
+
     },
 
     mounted() {
@@ -59,10 +58,13 @@
     .base-panel {
         bottom:0%;
         display:flex;
+        align-items: center;
+        gap: 5px;
+        /* justify-content: space-between; */
     }
   
-    p {
-      margin-top: 0%;
+    .prodigy-text {
+      color:#00ff00;
       /* float:left; */
     }
   

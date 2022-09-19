@@ -78,15 +78,15 @@
         />
         <InscriptionProdigyDiv 
           :pInscriptionSlots="this.inscriptionSlots" 
-          :pProdigyConfig1="this.getProdigyConfig(1)" 
-          :pProdigyConfig2="this.getProdigyConfig(2)" 
           @click-inscription-btn="unlockInscriptionSlot" 
-          @click-prodigy-slot="openProdigyPanel"
-        />
+          @click-prodigy-btn="openProdigyPanel"
+        >
+          {{selectedProdigyStr}}
+        </InscriptionProdigyDiv>
       </div>
     </div>
-    <ProdigyPanel v-show="isShowingProdigy" :p_data="this.prodigyConfig"></ProdigyPanel>
   </div>
+  <ProdigyPanel v-show="isShowingProdigy" :pData="this.prodigyConfig" :pId1="this.prodigyId1" :pId2="this.prodigyId2"></ProdigyPanel>
   <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
   <!-- <img src="./assets/talents/absorb_life.png"> -->
   <!-- <TalentIcon cur_level = 1 max_level = 5 :img_url = img_icon  /> -->
@@ -173,9 +173,7 @@ export default {
         this.totalStatPoints += delta
       } else {
         //Maximize
-        console.log("3333")
         if (this.totalStatPoints <= 0) {
-          console.log("9999999")
           return
         }
         let delta = Const.MAX_POINTS_PER_STAT - this.stats[key].base
@@ -219,7 +217,8 @@ export default {
 
     openProdigyPanel()
     {
-      //TODO
+      console.log("openProdigyPanel")
+      this.isShowingProdigy = !this.isShowingProdigy
     },
 
     hoverTalentMastery(tg, tree_type)
@@ -348,11 +347,11 @@ export default {
       console.log(this.prodigyConfig)
     },
 
-    getProdigyConfig(index) {
-      let key = index == 1 ? this.prodigyId1 : this.prodigyId2
+    getProdigyConfig(key) {
       if (key == "" || (this.prodigyConfig && Object.keys(this.prodigyConfig).length == 0)){
         return {"img_url" : ""}
       } else {
+        console.log(key)
         let tmp = key.split(".")
         let type = tmp[0]
         let index = parseInt(tmp[1])
@@ -651,6 +650,19 @@ export default {
     isSelectingTalent() {
       return this.selectedItemType == Const.ITEM_TYPE_TALENT
     },
+
+    selectedProdigyStr() {
+      let str = ""
+      if (this.prodigyId1 != "") {
+        str += this.getProdigyConfig(this.prodigyId1).name
+      }
+
+      if (this.prodigyId2 != "") {
+        str += ","
+        str += this.getProdigyConfig(this.prodigyId2).name
+      }
+      return str
+    }
   },
 
   watch: {
