@@ -1,6 +1,6 @@
 <template>
-    <div class="prodigy-panel-bg">
-        <div class="prodigy-panel-inner">
+    <div class="prodigy-panel-bg" @click="onClickBackground">
+        <div class="prodigy-panel-inner" @click="onClickInner">
             <div class="title-panel">
 
             </div>
@@ -11,13 +11,15 @@
                         <ol v-for="(pg, index1) in this.pData" :key="pg.type" class="prodigy-column">
                             <li v-for="(p, index2) in pg.talents" :key="p.type" :class="isNormalProdigy(p) ? 'show':'hide'"> 
                                 <!-- <p>{{p.name}}</p> -->
-                                <img :src="p.img_url" @click="onClickProdigy(index1, index2)" @mouseover="onHoverProdigy(index1, index2)"/>
+                                <img  :class="{icon:true, chosen:this.isChosen(index1, index2)}" :src="p.img_url" @click="onClickProdigy(index1, index2)" @mouseover="onHoverProdigy(index1, index2)"/>
                             </li>
                         </ol>
                     </div>
                 </div>
                 <div class="prodigy-desc">
-                    <p>Diplaying Prodigy: {{this.selectingProdigy.name}}</p>
+                    <TalentDesc 
+                        :pData="this.selectingProdigy"
+                    />
                 </div>
             </div>
         </div>
@@ -26,43 +28,54 @@
   
   <script>
   
-  
+  import { Const } from "../const.js"
+import TalentDesc from "./TalentDesc.vue"
   
   export default {
-    name: 'ProdigyPanel',
+    name: "ProdigyPanel",
     props: {
-      pData: Object,
-      pId1: String,
-      pId2: String
+        pData: Object,
+        pId1: String,
+        pId2: String
     },
-
     data() {
         return {
-            selectingProdigy:{}
-        }
+            selectingProdigy: {}
+        };
     },
-  
     methods: {
-        isNormalProdigy() {
-            return true
+        isNormalProdigy(config) {
+            if (Const.RACE_EVOLUTION.indexOf(config.short_name) != -1) {
+                return false;
+            }
+            if (config.is_class_evolution || config.not_listed) {
+                return false;
+            }
+            return true;
         },
-
+        isChosen(index1, index2) {
+            let tmp = [index1, index2].join(Const.PRODIGY_KEY_DELIMITER);
+            return tmp == this.pId1 || tmp == this.pId2;
+        },
         onClickProdigy(index1, index2) {
             // console.log("Hover " + index1 + index2)
-            this.$emit("click-prodigy", index1, index2)
+            this.$emit("click-prodigy", index1, index2);
         },
-
         onHoverProdigy(index1, index2) {
             // console.log("Hover " + index1 + index2)
-            this.selectingProdigy = this.pData[index1].talents[index2]
+            this.selectingProdigy = this.pData[index1].talents[index2];
+        },
+        onClickBackground() {
+            console.log("CLICK background");
+            this.$emit("close-prodigy-panel");
+        },
+        onClickInner(event) {
+            event.stopPropagation();
         }
-        
     },
-  
-    computed: {
-      
-    }
-  }
+    computed: {},
+    components: { TalentDesc }
+}
   </script>
   
   <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -87,8 +100,8 @@
     }
 
     .prodigy-panel-inner {
-        max-width:1080px;
-        max-height: 1080px;
+        max-width:80vw;
+        max-height: 80vh;
         text-align: center;
         border-style: solid;
         border-width: 64px;
@@ -104,17 +117,36 @@
 
     .prodigy-panel {
         flex: 1 1 450px;
+        width: 40vw;
     }
 
     .prodigy-container {
         overflow: auto;
+        height: 60vh;
         display:flex;
         flex-direction: row;
         gap:2px;
     }
 
+    .prodigy-container::-webkit-scrollbar {
+        width:20px;
+    }
+
+    .prodigy-container::-webkit-scrollbar-track {
+        background-image: url("../assets/ui/scrollbar_top.png"), url("../assets/ui/scrollbar.png"), url("../assets/ui/scrollbar_bottom.png");
+        background-repeat: no-repeat, repeat, no-repeat;
+        background-position-y: top, center, bottom;
+        background-size: auto, 80%, auto;
+    }
+
+    .prodigy-container::-webkit-scrollbar-thumb {
+        background-image: url("../assets/ui/scrollbar-sel.png");
+        background-repeat: no-repeat;
+    }
+
     .prodigy-desc {
         flex: 1 1 400px;
+        width: 35vh
     }
 
     .prodigy-column {
@@ -122,10 +154,14 @@
         padding-inline-start: 0px;
     }
 
-    img {
+    .icon {
         border-style: solid;
         border-width: 2px;
         border-color: #969696;
+    }
+
+    .chosen {
+        border-color: #00ff00;
     }
 
    

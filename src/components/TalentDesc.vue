@@ -3,10 +3,11 @@
         <p id="desc-title">{{pData.name}}</p>
         <p id="talent-level">Current talent level: {{pData.cur_level}}</p>
         <ol class="require-list">
-            <li :style="{color: pData.unlocked ? '#00ff00' : 'red'}">Talent category known</li>
-            <li v-if="!this.pData.no_levelup_category_deps && pData.index!=0" :style="{color: pData.category_dep ? '#00ff00' : 'red'}">Lower talents of the same category: {{pData.index}}</li>
+            <li :style="{color: (pData.unlocked || pData.points==1) ? '#00ff00' : 'red'}">Talent category known</li>
+            <li v-if="!this.pData.no_levelup_category_deps && pData.index!=0 && pData.points==5" :style="{color: pData.category_dep ? '#00ff00' : 'red'}">Lower talents of the same category: {{pData.index}}</li>
             <li v-if="statReq!=''">{{statReq}}</li>
             <li>Level: {{levelStr}}</li>
+            <li v-if="otherReq!=''">{{otherReq}}</li>
         </ol>
         <p style="color:#00ff00" id="effect-level"><span class="c1">Effect talent level:</span> {{effectLevelStr}}</p>
         <p style="color:#00ff00"><span class="c1">Use mode: </span>{{useModeStr}}</p>
@@ -35,11 +36,15 @@
 
     computed: {
         effectLevelStr(){
-            let arr = []
-            for (let i=1; i<6; i++) {
-                arr.push( (i*parseFloat(this.pData.mastery)).toFixed(1) )
+            if (this.pData.points == Const.TALENT_LEVEL_MAX) {
+                let arr = []
+                for (let i=0; i<Const.TALENT_LEVEE_MAX; i++) {
+                    arr.push( ((i+1)*parseFloat(this.pData.mastery)).toFixed(1) )
+                }
+                return arr.join(" ")
+            } else {
+                return "1"
             }
-            return arr.join(" ")
         },
 
         levelStr (){
@@ -63,7 +68,11 @@
                     let stat = tmp[1].split(" ")[0]
                     let t = []
                     for (let r of this.pData.require) {
-                        t.push(r.split(", ")[1].split(" ")[1])
+                        let s = r.split(", ")[1].split(" ")[1]
+                        if (s.trim().endsWith(';')) {
+                            s = s.trim().slice(0,-1)
+                        }
+                        t.push(s)
                     }
                     return stat + " " + t.join(", ")
                 }
@@ -71,6 +80,19 @@
                 return ""
             }
         }, 
+
+        otherReq() {
+            if (this.pData.require) {
+                let tmp = this.pData.require[0].split("; ")
+                if (tmp.length == 1) {
+                    return ""
+                } else {
+                    return tmp[1]
+                }
+            } else {
+                return ""
+            }
+        },
 
         useModeStr() {
             if (this.pData.mode) {
@@ -186,7 +208,6 @@
     }
     
     .talent-desc {
-        width:inherit;
         text-align: left;
     }
 

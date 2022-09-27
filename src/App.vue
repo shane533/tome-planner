@@ -79,14 +79,21 @@
         <InscriptionProdigyDiv 
           :pInscriptionSlots="this.inscriptionSlots" 
           @click-inscription-btn="unlockInscriptionSlot" 
-          @click-prodigy-btn="openProdigyPanel"
+          @click-prodigy-btn="openCloseProdigyPanel"
         >
           {{selectedProdigyStr}}
         </InscriptionProdigyDiv>
       </div>
     </div>
   </div>
-  <ProdigyPanel v-show="isShowingProdigy" :pData="this.prodigyConfig" :pId1="this.prodigyId1" :pId2="this.prodigyId2"></ProdigyPanel>
+  <ProdigyPanel
+   v-show="isShowingProdigy" 
+   :pData="this.prodigyConfig" 
+   :pId1="this.prodigyId1" 
+   :pId2="this.prodigyId2"
+   @close-prodigy-panel="openCloseProdigyPanel"
+   @click-prodigy="chooseProdigy"
+  />
   <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
   <!-- <img src="./assets/talents/absorb_life.png"> -->
   <!-- <TalentIcon cur_level = 1 max_level = 5 :img_url = img_icon  /> -->
@@ -215,9 +222,25 @@ export default {
       }
     },
 
-    openProdigyPanel()
+    chooseProdigy(index1, index2)
     {
-      console.log("openProdigyPanel")
+      let tmp = [index1, index2].join(Const.PRODIGY_KEY_DELIMITER)
+      if (tmp == this.prodigyId1) {
+        this.prodigyId1=this.prodigyId2
+        this.prodigyId2=""
+      } else if(tmp == this.prodigyId2) {
+        this.prodigyId2=""
+      } else if(this.prodigyId2 == "") {
+        this.prodigyId2 = tmp;
+      } else {
+        this.prodigyId1 = this.prodigyId2
+        this.prodigyId2 = tmp
+      }
+    },
+
+    openCloseProdigyPanel()
+    {
+      console.log("openCloseProdigyPanel")
       this.isShowingProdigy = !this.isShowingProdigy
     },
 
@@ -328,21 +351,22 @@ export default {
     prepareProdigyConfig()
     {
       let module = ProdigyConfig
-      console.log("load prodigy config")
-      console.log(module)
+      // console.log("load prodigy config")
+      // console.log(module)
       for (let m in module) {
-        console.log(m)
+        // console.log(m)
         let stat = module[m].name.slice(0,3)
         let index = Const.STAT_KEYS.indexOf(stat)
         if (index==-1) {
           continue
         }
         this.prodigyConfig[index] = module[m]
-        console.log(module[m].type)
-        console.log(this.prodigyConfig[index].talents)
+        // console.log(module[m].type)
+        // console.log(this.prodigyConfig[index].talents)
         for (let p of this.prodigyConfig[index].talents) {
           p.img_url = require("./assets/talents/" + p["image"])
         }
+        this.prodigyConfig[index].talents.sort((a,b) => a.name.localeCompare(b.name))
       }
       console.log(this.prodigyConfig)
     },
@@ -518,6 +542,9 @@ export default {
                  GP:this.totalGPoints,
                  CT:classTalents,
                  GT:genericTalents,
+                 IS:this.inscriptionSlots,
+                 P1:this.prodigyId1,
+                 P2:this.prodigyId2,
                 }
       let str = JSON.stringify(obj)
       console.log(str)
@@ -533,6 +560,9 @@ export default {
       this.totalCPoints = this.buildJson.CP
       this.totalCategoryPoints = this.buildJson.TP
       this.totalGPoints = this.buildJson.GP
+      this.prodigyId1 = this.buildJson.P1 ? this.buildJson.P1 : ""
+      this.prodigyId2 = this.buildJson.P2 ? this.buildJson.P2 : ""
+      this.inscriptionSlots = this.buildJson.IS
       let keys = Const.STAT_KEYS
       for (let i in this.buildJson.S) {
         this.stats[keys[i]].base = this.buildJson.S[i]
@@ -540,7 +570,7 @@ export default {
       }
 
       for (let t in this.buildJson.CT) {
-        console.log(t)
+        // console.log(t)
         this.cTalentsTree[t].dirty = true
         this.cTalentsTree[t].unlocked = this.buildJson.CT[t][0]
         this.cTalentsTree[t].mastery = this.buildJson.CT[t][1]
