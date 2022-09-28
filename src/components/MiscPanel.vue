@@ -1,23 +1,35 @@
 <template>
-    <div class="base-panel">
+  <div class="misc-panel">
+    <div class="inscription-prodigy-panel">
         <button class="btn" id="inscription-btn" @click="onClickInscriptionBtn">Inscription Slots:{{pInscriptionSlots}}</button>
         <button class="btn" id="prodigy-btn" @click="onClickProdigyBtn">Prodigies:</button>
         <div class="prodigy-text">
           <slot></slot>
         </div>
     </div>
-  </template>
+    <p>Add Escort Talent Tree</p>
+    <div class="escort-panel">
+      <select id="escort-select" v-model="treeSelected">
+        <option disabled value="">select a escort talent class</option>
+        <template v-for="c in escortConfig" :key="c.short_name">
+            <option :value="c.short_name">{{c.name}}</option>
+        </template>
+      </select>
+      <button class="btn" @click="onClickEscortButton">Add</button>
+    </div>
+  </div>
+</template>
   
   <script>
   
   
   
   export default {
-    name: 'InscriptionProdigyDiv',
+    name: 'MiscPanel',
     props: {
       pInscriptionSlots: Number,
     },
-    emits: ['click-inscription-btn', 'click-prodigy-btn'],
+    emits: ['click-inscription-btn', 'click-prodigy-btn', 'add-escort-tree'],
 
     methods: {
       onClickInscriptionBtn()
@@ -29,6 +41,11 @@
       onClickProdigyBtn()
       {
         this.$emit("click-prodigy-btn")
+      },
+
+      onClickEscortButton()
+      {
+        this.$emit("click-escort-btn")
       }
     },
   
@@ -55,12 +72,21 @@
       border-color: #969696;
     }
 
-    .base-panel {
+    .misc-panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .inscription-prodigy-panel {
         bottom:0%;
         display:flex;
         align-items: center;
         gap: 5px;
         /* justify-content: space-between; */
+    }
+
+    .escort-panel {
+      display: flex;
     }
   
     .prodigy-text {

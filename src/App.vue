@@ -76,13 +76,13 @@
           v-if="isSelectingTalent" 
           :pData="this.selectedItem"
         />
-        <InscriptionProdigyDiv 
+        <MiscPanel 
           :pInscriptionSlots="this.inscriptionSlots" 
           @click-inscription-btn="unlockInscriptionSlot" 
           @click-prodigy-btn="openCloseProdigyPanel"
         >
           {{selectedProdigyStr}}
-        </InscriptionProdigyDiv>
+        </MiscPanel>
       </div>
     </div>
   </div>
@@ -105,8 +105,8 @@
 import TalentTree from "./components/TalentTree.vue"
 import StatIcon from "./components/StatIcon.vue"
 import TalentDesc from "./components/TalentDesc.vue"
-import InscriptionProdigyDiv from "./components/InscriptionProdigyDiv.vue"
 import ProdigyPanel from "./components/ProdigyPanel.vue"
+import MiscPanel from "./components/MiscPanel.vue"
 
 import { Const } from "./const.js"
 import ProdigyConfig from "./assets/data/1.7.4/talents.uber-1.json"
@@ -121,8 +121,8 @@ export default {
     StatIcon,
     TalentTree,
     TalentDesc,
-    InscriptionProdigyDiv,
-    ProdigyPanel
+    ProdigyPanel,
+    MiscPanel
 },
 
   methods: {
