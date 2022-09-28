@@ -80,6 +80,7 @@
           :pInscriptionSlots="this.inscriptionSlots" 
           @click-inscription-btn="unlockInscriptionSlot" 
           @click-prodigy-btn="openCloseProdigyPanel"
+          @click-escort-btn="addEscortTree"
         >
           {{selectedProdigyStr}}
         </MiscPanel>
@@ -153,6 +154,59 @@ export default {
         this.desc = this.selectedItem.name
       }
       // console.log("update_desc_panel " + this.desc)
+    },
+
+    makeTalentGroupType(name) {
+      let tmp = name.split("/")
+      let gtype = tmp[0].trim().toLowerCase()
+      let gname = tmp[1].trim().toLowerCase().replace(" ", "-")
+      let type = gtype+"/"+gname
+      console.log("make talent group type: " + type)
+      return type
+    },
+
+    addEscortTree(treeSelected){
+      console.log("AddEscortTree")
+      if(treeSelected == "") {
+        return
+      }
+      let isSteam = treeSelected == "SteamTech"
+      if (isSteam){
+        if (this.totalCategoryPoints <= 0) {
+          alert("Do not have category points to unlock steam talent trees")
+          return
+        } else {
+          this.totalCategoryPoints -= 1
+        }
+      }
+
+      let type = isSteam ? Const.STEAMTECH_TYPE : treeSelected.split("/")[0].trim().toLowerCase()
+      let groups = isSteam ? ["steamtech/physics", "steamtech/chemistry"] : [this.makeTalentGroupType(treeSelected)]
+      
+      import(`@/assets/data/${this.tomeVersion}/talents.${type}-1.json`).then((module)=>{
+        // console.log(ctg)
+        for (let i in module) {
+          if (groups.includes(module[i]["type"])) {
+            let tStatus = {
+                  "index" : Object.keys(this.gTalentsTree).length + 1,
+                  "mastery" : 1,
+                  "unlocked" : isSteam ? true : false,
+                  "default_unlocked" : isSteam ? true : false,
+                  "enhanced" : false,
+                  "dirty" : false,
+            }
+            let config = { ...tStatus, ...module[i]}
+            for(let t of config["talents"]) {
+              t["cur_level"] = 0
+              t["max_level"] = t["points"]
+              t["img_url"] = require("./assets/talents/"+ t["image"])
+              t["index"] = i
+            }
+            this.gTalentsTree[module[i]["type"]] = config
+            alert("add escort tree succeed")
+          }
+        }
+      })
     },
 
     hoverStatIcon(key)
@@ -334,7 +388,9 @@ export default {
           let t_status = {
             "mastery" : 1,
             "unlocked": true,
-            "enhanced": false
+            "default_unlocked": true,
+            "enhanced": false,
+            "dirty": false
           }
           let config = {...t_status, ...module[m]}
           for (let [i,t] of config["talents"].entries()) {

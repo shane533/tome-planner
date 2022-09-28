@@ -8,6 +8,8 @@ export const Const = Object.freeze(
     TOTAL_PRODIGY_POINTS : 2,
     MAX_POINTS_PER_STAT : 60,
 
+    TALENT_LEVEL_MAX : 5,
+
     INSCRIPTION_SLOT_BASE : 3,
     INSCRIPTION_SLOT_MAX : 5,
 
@@ -15,6 +17,8 @@ export const Const = Object.freeze(
     ITEM_TYPE_TALENT : 1,
     ITEM_TYPE_CATEGORY : 2,
     ITEM_TYPE_STAT : 3,
+
+    STEAMTECH_TYPE : "steamtech",
 
     TREE_TYPE_CLASS : "class",
     TREE_TYPE_GENERIC : "generic",

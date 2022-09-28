@@ -7,12 +7,12 @@
           <slot></slot>
         </div>
     </div>
-    <p>Add Escort Talent Tree</p>
+    <p class="escort-title">Add Escort Talent Tree</p>
     <div class="escort-panel">
       <select id="escort-select" v-model="treeSelected">
         <option disabled value="">select a escort talent class</option>
-        <template v-for="c in escortConfig" :key="c.short_name">
-            <option :value="c.short_name">{{c.name}}</option>
+        <template v-for="c in escortConfig" :key="c">
+            <option :value="c">{{c}}</option>
         </template>
       </select>
       <button class="btn" @click="onClickEscortButton">Add</button>
@@ -29,7 +29,27 @@
     props: {
       pInscriptionSlots: Number,
     },
-    emits: ['click-inscription-btn', 'click-prodigy-btn', 'add-escort-tree'],
+    emits: ['click-inscription-btn', 'click-prodigy-btn', 'click-escort-btn'],
+
+    data() {
+      return {
+        treeSelected : "",
+        escortConfig : ["Spell / Staff Combat", 
+                        "Spell / Stone Alchemy", 
+                        "Wild-Gift / Mindstar Mastery",
+                        "Corruption / Curses",
+                        "	Psionic / Feedback",
+                        "Spell / Divination",
+                        "Wild-Gift / Call of the Wild",
+                        "Celestial / Chants",
+                        "Psionic / Augmented Mobility",
+                        "Chronomancy / Chronomancy",
+                        "Psionic / Dreaming",
+                        "Cunning / Survival",
+                        "Cunning / Scoundrel",
+                        "SteamTech"]
+      }
+    },
 
     methods: {
       onClickInscriptionBtn()
@@ -45,7 +65,8 @@
 
       onClickEscortButton()
       {
-        this.$emit("click-escort-btn")
+        console.log("Click escort button")
+        this.$emit("click-escort-btn", this.treeSelected)
       }
     },
   
@@ -92,6 +113,10 @@
     .prodigy-text {
       color:#00ff00;
       /* float:left; */
+    }
+
+    .escort-title {
+      text-align: left;
     }
   
    

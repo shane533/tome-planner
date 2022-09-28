@@ -24,7 +24,7 @@ export default {
         pData: Object
     },
     components: { TalentIcon },
-    emits: ['click-talent', 'hover-talent'],
+    emits: ['click-talent', 'hover-talent', 'click-mastery'],
 
     data() {
       return {
