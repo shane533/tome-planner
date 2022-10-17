@@ -181,32 +181,14 @@ export default {
       }
 
       let type = isSteam ? Const.STEAMTECH_TYPE : treeSelected.split("/")[0].trim().toLowerCase()
-      let groups = isSteam ? ["steamtech/physics", "steamtech/chemistry"] : [this.makeTalentGroupType(treeSelected)]
+      let groups = this.makeTalentGroupType(treeSelected)
       
-      import(`@/assets/data/${this.tomeVersion}/talents.${type}-1.json`).then((module)=>{
-        // console.log(ctg)
-        for (let i in module) {
-          if (groups.includes(module[i]["type"])) {
-            let tStatus = {
-                  "index" : Object.keys(this.gTalentsTree).length + 1,
-                  "mastery" : 1,
-                  "unlocked" : isSteam ? true : false,
-                  "default_unlocked" : isSteam ? true : false,
-                  "enhanced" : false,
-                  "dirty" : false,
-            }
-            let config = { ...tStatus, ...module[i]}
-            for(let t of config["talents"]) {
-              t["cur_level"] = 0
-              t["max_level"] = t["points"]
-              t["img_url"] = require("./assets/talents/"+ t["image"])
-              t["index"] = i
-            }
-            this.gTalentsTree[module[i]["type"]] = config
-            alert("add escort tree succeed")
-          }
-        }
-      })
+      if (isSteam) {
+        this.initializeOneTalentGroup("steamtech/physics", 1, Object.keys(this.gTalentsTree).length+1, true, true, false, false, [0,0,0,0], false)
+        this.initializeOneTalentGroup("steamtech/chemistry", 1, Object.keys(this.gTalentsTree).length+2, true, true, false, false, [0,0,0,0], false)
+      } else {
+        this.initializeOneTalentGroup(groups, 1, Object.keys(this.gTalentsTree).length+1, true, true, false, false, [0,0,0,0], false)
+      }
     },
 
     hoverStatIcon(key)
@@ -380,29 +362,29 @@ export default {
       return ["GHOUL", "SKELETON"].indexOf(race) != -1
     },
 
-    onLoadRaceTalent(module)
-    {
-      console.log("insert race talent")
-      for (let m in module){
-        if (module[m]["name"] == this.raceSelected.toLowerCase()) {
-          let t_status = {
-            "mastery" : 1,
-            "unlocked": true,
-            "default_unlocked": true,
-            "enhanced": false,
-            "dirty": false
-          }
-          let config = {...t_status, ...module[m]}
-          for (let [i,t] of config["talents"].entries()) {
-            t["cur_level"] = i == 0 ? 1 : 0
-            t["max_level"] = t["points"]
-            t["img_url"] = require("./assets/talents/"+ t["image"])
-          }
+    // onLoadRaceTalent(module)
+    // {
+    //   console.log("insert race talent")
+    //   for (let m in module){
+    //     if (module[m]["name"] == this.raceSelected.toLowerCase()) {
+    //       let t_status = {
+    //         "mastery" : 1,
+    //         "unlocked": true,
+    //         "default_unlocked": true,
+    //         "enhanced": false,
+    //         "dirty": false
+    //       }
+    //       let config = {...t_status, ...module[m]}
+    //       for (let [i,t] of config["talents"].entries()) {
+    //         t["cur_level"] = i == 0 ? 1 : 0
+    //         t["max_level"] = t["points"]
+    //         t["img_url"] = require("./assets/talents/"+ t["image"])
+    //       }
           
-          this.gTalentsTree[module[m]["type"]] = config
-        }
-      }
-    },
+    //       this.gTalentsTree[module[m]["type"]] = config
+    //     }
+    //   }
+    // },
 
     prepareProdigyConfig()
     {
@@ -439,19 +421,8 @@ export default {
       }
     },
 
-    async resetAll()
+    async initializeWithRaceAndClass()
     {
-
-      if (this.raceSelected=="" || this.classSelected=="") {
-        return
-      }
-
-      if (this.isReseting) {
-        return
-      }
-
-      this.isReseting = true
-
       // base points
       this.totalStatPoints = Const.TOTAL_STAT_POINTS
       this.totalCPoints = Const.TOTAL_CLASS_POINTS
@@ -462,8 +433,8 @@ export default {
 
       if (this.raceSelected == "CORNAC") {
         this.totalCategoryPoints += 1
-        this.totalCPoints += 6
-        this.totalGPoints += 6
+        this.totalCPoints += Const.CORNAC_BONUS_POINTS
+        this.totalGPoints += Const.CORNAC_BONUS_POINTS
       }
       
       // reseting stats
@@ -486,9 +457,11 @@ export default {
       this.gTalentsTree = {}
 
       if (this.isUndeadRace(this.raceSelected)) {
-        import(`@/assets/data/${this.tomeVersion}/talents.undead-1.json`).then(this.onLoadRaceTalent)
+        this.initializeOneTalentGroup("undead/" + this.raceSelected.toLowerCase(), 1, 0, true, true, false, false, [1, 0, 0, 0], false)
+        // import(`@/assets/data/${this.tomeVersion}/talents.undead-1.json`).then(this.onLoadRaceTalent)
       } else {
-        import(`@/assets/data/${this.tomeVersion}/talents.race-1.json`).then(this.onLoadRaceTalent)
+        this.initializeOneTalentGroup("race/" + this.raceSelected.toLowerCase(), 1, 0, true, true, false, false, [1, 0, 0, 0], false)
+        // import(`@/assets/data/${this.tomeVersion}/talents.race-1.json`).then(this.onLoadRaceTalent)
       }
 
       if (Object.keys(this.classConfig[this.classSelected]["talents_types_class"]).length == 0) {
@@ -496,7 +469,7 @@ export default {
         return
       }
 
-      for (let tree of ["talents_types_class", "talents_types_generic"]) {
+      for (let tree of [Const.TALENTS_TYPES_CLASS, Const.TALENTS_TYPES_GENERIC]) {
         let classConfig = this.classConfig[this.classSelected]
         let sorted = []
         for (let type in classConfig[tree]) {
@@ -514,57 +487,182 @@ export default {
           let talentGroup = classConfig[tree][ctg]
           // let talent_group = class_config[tree][ctg]
           let mastery = talentGroup[1]
-          let type = ctg.split("/")[0]
-          // let name = ctg.split("/")[1]
-          let tStatus = {
-            "index" : i,
-            "mastery" : mastery,
-            "unlocked" : talentGroup[0],
-            "default_unlocked" : talentGroup[0],
-            "enhanced" : false,
-            "dirty" : false,
-          }
-          
-          await import(`@/assets/data/${this.tomeVersion}/talents.${type}-${mastery}.json`).then((module)=>{
-            // console.log(ctg)
-            for (let i in module) {
-              if (module[i]["type"] == ctg) {
-                let config = { ...tStatus, ...module[i]}
-                for(let t of config["talents"]) {
-                  if (t["id"] in classConfig["talents"]) {
-                    t["cur_level"] = parseInt(classConfig["talents"][t.id])
-                  } else {
-                    t["cur_level"] = 0
-                  }
-                  t["max_level"] = t["points"]
-                  t["img_url"] = require("./assets/talents/"+ t["image"])
-                  t["index"] = i
-                }
+          let unlocked = talentGroup[0]
 
-                if (tree == "talents_types_class") {
-                  this.cTalentsTree[ctg] = config
+          this.initializeOneTalentGroup(ctg, mastery, i, unlocked, unlocked, false, false, classConfig["talents"], tree==Const.TALENTS_TYPES_CLASS)
+
+          // let type = ctg.split("/")[0]
+          // // let name = ctg.split("/")[1]
+          // let tStatus = {
+          //   "index" : i,
+          //   "mastery" : mastery,
+          //   "unlocked" : talentGroup[0],
+          //   "default_unlocked" : talentGroup[0],
+          //   "enhanced" : false,
+          //   "dirty" : false,
+          // }
+          
+          // await import(`@/assets/data/${this.tomeVersion}/talents.${type}-${mastery}.json`).then((module)=>{
+          //   // console.log(ctg)
+          //   for (let i in module) {
+          //     if (module[i]["type"] == ctg) {
+          //       let config = { ...tStatus, ...module[i]}
+          //       for(let t of config["talents"]) {
+          //         if (t["id"] in classConfig["talents"]) {
+          //           t["cur_level"] = parseInt(classConfig["talents"][t.id])
+          //         } else {
+          //           t["cur_level"] = 0
+          //         }
+          //         t["max_level"] = t["points"]
+          //         t["img_url"] = require("./assets/talents/"+ t["image"])
+          //         t["index"] = i
+          //       }
+
+          //       if (tree == "talents_types_class") {
+          //         this.cTalentsTree[ctg] = config
+          //       } else {
+          //         this.gTalentsTree[ctg] = config
+          //       }
+          //     }
+          //   }
+
+          //   if (tree == "talents_types_generic" && tStatus.index == sorted.length-1){
+          //     this.finishLoading()
+          //   }
+          // })
+        }
+      }
+    },
+
+    initializeWithBuildJson()
+    {
+      this.totalStatPoints = this.buildJson.SP
+      this.totalCPoints = this.buildJson.CP
+      this.totalCategoryPoints = this.buildJson.TP
+      this.totalGPoints = this.buildJson.GP
+      this.prodigyId1 = this.buildJson.P1 ? this.buildJson.P1 : ""
+      this.prodigyId2 = this.buildJson.P2 ? this.buildJson.P2 : ""
+      this.inscriptionSlots = this.buildJson.IS
+      let keys = Const.STAT_KEYS
+      for (let i in this.buildJson.S) {
+        this.stats[keys[i]].base = this.buildJson.S[i]
+        this.stats[keys[i]].total = this.buildJson.S[i]
+      }
+
+      for (let treeJson of [this.buildJson.CT, this.buildJson.GT]) {
+        let type = treeJson == this.buildJson.CT ? Const.TALENTS_TYPES_CLASS : Const.TALENTS_TYPES_GENERIC
+        let trees = this.classConfig[this.classSelected][type]
+        let defaultTalents = this.classConfig[this.classSelected]["talents"]
+        let talentGroups = Object.keys(trees)
+        let count = 0
+        for (let t in treeJson) {
+          let index = talentGroups.indexOf(t)
+          let mastery = treeJson[t][1]
+          let unlocked = treeJson[t][0]
+          let curLevels = treeJson[t][2]
+          if (index != -1) {
+            let defaultUnlocked = trees[t][0]
+            let enhanced = mastery != trees[t][1]
+            talentGroups.splice(index, 1)
+            this.initializeOneTalentGroup(t, mastery, count, unlocked, defaultUnlocked, enhanced, true, curLevels, type==Const.TALENTS_TYPES_CLASS)
+          } else {
+            this.initializeOneTalentGroup(t, mastery, count, unlocked, false, mastery==1, true, curLevels, type==Const.TALENTS_TYPES_CLASS)
+          }
+          count += 1
+        }
+  
+        for (let t of talentGroups) {
+          let mastery = trees[t][1]
+          let unlocked = trees[t][0]
+          this.initializeOneTalentGroup(t, mastery, count, unlocked, unlocked, false, false, defaultTalents, type==Const.TALENTS_TYPES_CLASS)
+          count += 1
+        }
+      }
+      this.build=""
+    },
+
+    async initializeOneTalentGroup(talentGroupID, mastery, index, unlocked, defaultUnlocked, enhanced, dirty, curLevels, isClass)
+    {
+      console.log("start loading" + talentGroupID)
+      this.loadingCount += 1
+      let type = talentGroupID.split("/")[0]
+      await import(`@/assets/data/${this.tomeVersion}/talents.${type}-${mastery}.json`).then((module)=>{
+        // console.log(ctg)
+        for (let i in module) {
+          if (module[i]["type"] == talentGroupID) {
+            let tStatus = {
+                  "index" : index,
+                  "mastery" : mastery,
+                  "unlocked" : unlocked,
+                  "default_unlocked" : defaultUnlocked,
+                  "enhanced" : enhanced,
+                  "dirty" : dirty,
+            }
+            let config = { ...tStatus, ...module[i]}
+            for(let t of config["talents"]) {
+
+              if (Array.isArray(curLevels)) {
+                t["cur_level"] = curLevels[config["talents"].indexOf(t)]
+              } else {
+                if (t["id"] in curLevels) {
+                  t["cur_level"] = parseInt(curLevels[t.id])
                 } else {
-                  this.gTalentsTree[ctg] = config
+                  t["cur_level"] = 0
                 }
               }
-            }
 
-            if (tree == "talents_types_generic" && tStatus.index == sorted.length-1){
-              this.finishLoading()
+              t["max_level"] = t["points"]
+              t["img_url"] = require("./assets/talents/"+ t["image"])
+              t["index"] = i
             }
-          })
+            if (isClass) {
+              this.cTalentsTree[talentGroupID] = config
+            } else {
+              this.gTalentsTree[talentGroupID] = config
+            }
+            console.log("load one talent group: " + talentGroupID)
+            this.loadingCount -= 1
+            if (this.loadingCount == 0) {
+              this.isReseting = false
+            }
+          }
         }
+      })
+    },
+
+    async resetAll()
+    {
+
+      if (this.raceSelected=="" || this.classSelected=="") {
+        return
+      }
+
+      if (this.isReseting) {
+        return
+      }
+
+      this.isReseting = true
+
+      if (this.hasBuildURL()) {
+        this.initializeWithBuildJson()
+      } else {
+        this.initializeWithRaceAndClass()
       }
 
     },
 
+    hasBuildURL()
+    {
+      return this.build && this.build != ""
+    },
+
     finishLoading()
     {
-      console.log("=====Finish Loading")
-      this.isReseting = false
-      if (this.build && this.build != "") {
-        this.deserialize_base64_remains()
-      }
+      // console.log("=====Finish Loading")
+      // this.isReseting = false
+      // if (this.hasBuildURL()) {
+      //   this.deserialize_base64_remains()
+      // }
     },
 
     serialize2base64() 
@@ -670,6 +768,7 @@ export default {
       build : "", //build string passed through URL
       buildJson: {},
       isReseting : false,
+      loadingCount : 0,
 
       isShowingProdigy : false,
 

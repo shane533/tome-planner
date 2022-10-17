@@ -8,6 +8,8 @@ export const Const = Object.freeze(
     TOTAL_PRODIGY_POINTS : 2,
     MAX_POINTS_PER_STAT : 60,
 
+    CORNAC_BONUS_POINTS : 6, 
+
     TALENT_LEVEL_MAX : 5,
 
     INSCRIPTION_SLOT_BASE : 3,
@@ -22,6 +24,9 @@ export const Const = Object.freeze(
 
     TREE_TYPE_CLASS : "class",
     TREE_TYPE_GENERIC : "generic",
+
+    TALENTS_TYPES_CLASS : "talents_types_class",
+    TALENTS_TYPES_GENERIC : "talents_types_generic",
 
     SHARE_URL : "https://shane533.github.io/tome-planner?build=",
 
