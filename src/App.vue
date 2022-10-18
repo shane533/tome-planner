@@ -187,6 +187,9 @@ export default {
     },
 
     addEscortTree(treeSelected){
+      if (this.isEmpty()) {
+        return
+      }
       console.log("AddEscortTree")
       if(treeSelected == "") {
         return
@@ -221,6 +224,9 @@ export default {
 
     assignStatPoints(key)
     {
+      if (this.isEmpty()) {
+        return
+      }
       if (this.stats[key].base < Const.MAX_POINTS_PER_STAT && this.totalStatPoints > 0) {
         this.stats[key].base += 1
         this.stats[key].total += 1
@@ -230,6 +236,9 @@ export default {
 
     maximizeOrClearStat(key)
     {
+      if (this.isEmpty()) {
+        return
+      }
       if (this.stats[key].base == Const.MAX_POINTS_PER_STAT) {
         //Clear
         let delta = Const.MAX_POINTS_PER_STAT - this.stats[key].init
@@ -253,6 +262,9 @@ export default {
 
     clickTalentMastery(tg, treeType)
     {
+      if (this.isEmpty()) {
+        return
+      }
       console.log("CLICK TALENT MASTERY")
       if (this.totalCategoryPoints > 0) {
         let group = treeType == Const.TREE_TYPE_CLASS ? 
@@ -274,6 +286,9 @@ export default {
 
     unlockInscriptionSlot()
     {
+      if (this.isEmpty()) {
+        return
+      }
       if (this.totalCategoryPoints > 0 && this.inscriptionSlots < Const.INSCRIPTION_SLOT_MAX) {
         this.inscriptionSlots += 1
         this.totalCategoryPoints -= 1
@@ -298,6 +313,9 @@ export default {
 
     openCloseProdigyPanel()
     {
+      if (this.isEmpty()) {
+        return
+      }
       console.log("openCloseProdigyPanel")
       this.isShowingProdigy = !this.isShowingProdigy
     },
@@ -311,6 +329,9 @@ export default {
 
     clickTalentIcon(t, tg, tree_type)
     {
+      if (this.isEmpty()) {
+        return
+      }
       let group = tree_type == Const.TREE_TYPE_CLASS ? 
                                     this.cTalentsTree[tg]
                                      : this.gTalentsTree[tg]
@@ -335,6 +356,9 @@ export default {
 
     assignTalentPoints(treeType, talent)
     {
+      if (this.isEmpty()) {
+        return
+      }
       console.log("assign_talent_points of " + treeType + " : " + talent.name)
       treeType == Const.TREE_TYPE_CLASS ? this.totalCPoints -=1 : this.totalGPoints -= 1
       talent.cur_level += 1
@@ -342,6 +366,9 @@ export default {
 
     generateShareURL()
     {
+      if (this.isEmpty()) {
+        return
+      }
       console.log("===Click share button")
       this.serialize2base64()
       navigator.clipboard.writeText(Const.SHARE_URL+this.build).then(function() {
@@ -354,6 +381,9 @@ export default {
 
     resetTalentGroup(tg, treeType)
     {
+      if (this.isEmpty()) {
+        return
+      }
       // console.log("Reset talent group:" + tg + " type:" + tree_type)
       let group = treeType == Const.TREE_TYPE_CLASS ? this.cTalentsTree[tg] : this.gTalentsTree[tg]
       group.dirty = false
@@ -377,6 +407,11 @@ export default {
       }
 
       treeType == Const.TREE_TYPE_CLASS ? this.totalCPoints += refundPoints : this.totalGPoints += refundPoints
+    },
+
+    isEmpty()
+    {
+      return this.raceSelected == "" || this.classSelected == ""
     },
 
     isUndeadRace(race)
@@ -750,20 +785,20 @@ export default {
         "str" : {
           name : "STR",
           img_url : new URL("./assets/stats/strength.png", import.meta.url),
-          base : 0,
-          total : 0
+          base : Const.BASE_STAT_POINT,
+          total : Const.BASE_STAT_POINT
         },
         "dex" : {
           name : "DEX",
           img_url : new URL("./assets/stats/dexterity.png", import.meta.url),
-          base : 0,
-          total : 0
+          base : Const.BASE_STAT_POINT,
+          total : Const.BASE_STAT_POINT
         },
         "con" : {
           name : "CON",
           img_url : new URL("./assets/stats/constitution.png", import.meta.url),
-          base : 0,
-          total : 0
+          base : Const.BASE_STAT_POINT,
+          total : Const.BASE_STAT_POINT
         },
         "mag" : {
           name : "MAG",
