@@ -3,7 +3,7 @@
 A character builder for [Tales of Maj'Eyal](https://te4.org)
 Using json data from [ToMETips](https://tometips.github.io)
 
-Current Features:
+Avaliable Features:
 + Plan your character's stat/talents/prodigies
 + Share your build with auto-generated URL
 
