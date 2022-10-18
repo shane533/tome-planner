@@ -7,7 +7,7 @@
           <slot></slot>
         </div>
     </div>
-    <p class="escort-title">Add Escort Talent Tree</p>
+    <p class="escort-title">Add Escort/Reward Talent Tree</p>
     <div class="escort-panel">
       <select id="escort-select" v-model="treeSelected">
         <option disabled value="">select a escort talent class</option>
@@ -38,7 +38,7 @@
                         "Spell / Stone Alchemy", 
                         "Wild-Gift / Mindstar Mastery",
                         "Corruption / Curses",
-                        "	Psionic / Feedback",
+                        "Psionic / Feedback",
                         "Spell / Divination",
                         "Wild-Gift / Call of the Wild",
                         "Celestial / Chants",
@@ -47,7 +47,10 @@
                         "Psionic / Dreaming",
                         "Cunning / Survival",
                         "Cunning / Scoundrel",
-                        "SteamTech"]
+                        "SteamTech",
+                        "Wild-Gift / Harmony",
+                        "Corruption / Vile Life",
+                        "Corruption / Hexes"]
       }
     },
 

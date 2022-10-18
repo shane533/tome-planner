@@ -95,6 +95,27 @@
    @close-prodigy-panel="openCloseProdigyPanel"
    @click-prodigy="chooseProdigy"
   />
+  <div class="readme-panel">
+    <div class="readme-inner">
+      <h2>ToME Planner</h2>
+      <p>A character builder for <a href="https://te4.org">Tales of Maj'Eyal</a></p>
+      <p>Using json data from <a href="tometips.github.io">ToME Tips</a></p>
+      <p>developed by <a href="mailto: ptez533@gmail.com">shane533</a></p>
+      <h3>Avaliable Features:</h3>
+      <ol class="readme-list">
+        <li>Plan your character's stat/talents/prodigies</li>
+        <li>Share your build with auto-generated URL</li>
+      </ol>
+      <h3>Features not implemented yet:</h3>
+      <ol class="readme-list">
+        <li>Adventurer Class Support</li>
+        <li>Race/Class Evolution Prodigies</li>
+      </ol>
+      <h3>ChangeLog</h3>
+      <h4>Oct 18,2022</h4>
+      <p>first release</p>
+    </div>
+  </div>
   <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
   <!-- <img src="./assets/talents/absorb_life.png"> -->
   <!-- <TalentIcon cur_level = 1 max_level = 5 :img_url = img_icon  /> -->
@@ -180,7 +201,6 @@ export default {
         }
       }
 
-      let type = isSteam ? Const.STEAMTECH_TYPE : treeSelected.split("/")[0].trim().toLowerCase()
       let groups = this.makeTalentGroupType(treeSelected)
       
       if (isSteam) {
@@ -362,30 +382,6 @@ export default {
       return ["GHOUL", "SKELETON"].indexOf(race) != -1
     },
 
-    // onLoadRaceTalent(module)
-    // {
-    //   console.log("insert race talent")
-    //   for (let m in module){
-    //     if (module[m]["name"] == this.raceSelected.toLowerCase()) {
-    //       let t_status = {
-    //         "mastery" : 1,
-    //         "unlocked": true,
-    //         "default_unlocked": true,
-    //         "enhanced": false,
-    //         "dirty": false
-    //       }
-    //       let config = {...t_status, ...module[m]}
-    //       for (let [i,t] of config["talents"].entries()) {
-    //         t["cur_level"] = i == 0 ? 1 : 0
-    //         t["max_level"] = t["points"]
-    //         t["img_url"] = require("./assets/talents/"+ t["image"])
-    //       }
-          
-    //       this.gTalentsTree[module[m]["type"]] = config
-    //     }
-    //   }
-    // },
-
     prepareProdigyConfig()
     {
       let module = ProdigyConfig
@@ -428,7 +424,6 @@ export default {
       this.totalCPoints = Const.TOTAL_CLASS_POINTS
       this.totalGPoints = Const.TOTAL_GENERIC_POINTS
       this.totalCategoryPoints = Const.TOTAL_CATEGORY_POINTS
-      // this.total_prodigy_points = Const.TOTAL_PRODIGY_POINTS
       this.inscriptionSlots = Const.INSCRIPTION_SLOT_BASE
 
       if (this.raceSelected == "CORNAC") {
@@ -458,10 +453,8 @@ export default {
 
       if (this.isUndeadRace(this.raceSelected)) {
         this.initializeOneTalentGroup("undead/" + this.raceSelected.toLowerCase(), 1, 0, true, true, false, false, [1, 0, 0, 0], false)
-        // import(`@/assets/data/${this.tomeVersion}/talents.undead-1.json`).then(this.onLoadRaceTalent)
       } else {
         this.initializeOneTalentGroup("race/" + this.raceSelected.toLowerCase(), 1, 0, true, true, false, false, [1, 0, 0, 0], false)
-        // import(`@/assets/data/${this.tomeVersion}/talents.race-1.json`).then(this.onLoadRaceTalent)
       }
 
       if (Object.keys(this.classConfig[this.classSelected]["talents_types_class"]).length == 0) {
@@ -490,46 +483,6 @@ export default {
           let unlocked = talentGroup[0]
 
           this.initializeOneTalentGroup(ctg, mastery, i, unlocked, unlocked, false, false, classConfig["talents"], tree==Const.TALENTS_TYPES_CLASS)
-
-          // let type = ctg.split("/")[0]
-          // // let name = ctg.split("/")[1]
-          // let tStatus = {
-          //   "index" : i,
-          //   "mastery" : mastery,
-          //   "unlocked" : talentGroup[0],
-          //   "default_unlocked" : talentGroup[0],
-          //   "enhanced" : false,
-          //   "dirty" : false,
-          // }
-          
-          // await import(`@/assets/data/${this.tomeVersion}/talents.${type}-${mastery}.json`).then((module)=>{
-          //   // console.log(ctg)
-          //   for (let i in module) {
-          //     if (module[i]["type"] == ctg) {
-          //       let config = { ...tStatus, ...module[i]}
-          //       for(let t of config["talents"]) {
-          //         if (t["id"] in classConfig["talents"]) {
-          //           t["cur_level"] = parseInt(classConfig["talents"][t.id])
-          //         } else {
-          //           t["cur_level"] = 0
-          //         }
-          //         t["max_level"] = t["points"]
-          //         t["img_url"] = require("./assets/talents/"+ t["image"])
-          //         t["index"] = i
-          //       }
-
-          //       if (tree == "talents_types_class") {
-          //         this.cTalentsTree[ctg] = config
-          //       } else {
-          //         this.gTalentsTree[ctg] = config
-          //       }
-          //     }
-          //   }
-
-          //   if (tree == "talents_types_generic" && tStatus.index == sorted.length-1){
-          //     this.finishLoading()
-          //   }
-          // })
         }
       }
     },
@@ -986,5 +939,26 @@ export default {
   align-self: center;
 }
 
+.readme-panel {
+  display: flex;
+  justify-content: center;
+}
+
+.readme-list {
+  text-align: left;
+  list-style: square;
+}
+
+h2 {
+  color: #759022;
+}
+
+h3 {
+  color: #759022;
+}
+
+a:link {
+  color:#eee;
+}
 
 </style>

@@ -1,5 +1,16 @@
 # tome-planner
 
+A character builder for [Tales of Maj'Eyal](https://te4.org)
+Using json data from [ToMETips](https://tometips.github.io)
+
+Current Features:
++ Plan your character's stat/talents/prodigies
++ Share your build with auto-generated URL
+
+Features not implemented yet:
++ Adventurer Class support
++ Race/Class Evolution Prodigies
+
 ## Project setup
 ```
 npm install
