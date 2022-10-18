@@ -191,7 +191,7 @@ export default {
       if(treeSelected == "") {
         return
       }
-      let isSteam = treeSelected == "SteamTech"
+      let isSteam = treeSelected[1] == "steamtech"
       if (isSteam){
         if (this.totalCategoryPoints <= 0) {
           alert("Do not have category points to unlock steam talent trees")
@@ -201,13 +201,15 @@ export default {
         }
       }
 
-      let groups = this.makeTalentGroupType(treeSelected)
+      let groups = treeSelected[1]
+      let unlocked = treeSelected[2]
+      let curLevels = treeSelected[3]
       
       if (isSteam) {
-        this.initializeOneTalentGroup("steamtech/physics", 1, Object.keys(this.gTalentsTree).length+1, true, true, false, false, [0,0,0,0], false)
-        this.initializeOneTalentGroup("steamtech/chemistry", 1, Object.keys(this.gTalentsTree).length+2, true, true, false, false, [0,0,0,0], false)
+        this.initializeOneTalentGroup("steamtech/physics", 1, Object.keys(this.gTalentsTree).length+1, unlocked, unlocked, false, false, curLevels, false)
+        this.initializeOneTalentGroup("steamtech/chemistry", 1, Object.keys(this.gTalentsTree).length+2, unlocked, unlocked, false, false, curLevels, false)
       } else {
-        this.initializeOneTalentGroup(groups, 1, Object.keys(this.gTalentsTree).length+1, true, true, false, false, [0,0,0,0], false)
+        this.initializeOneTalentGroup(groups, 1, Object.keys(this.gTalentsTree).length+1, unlocked, unlocked, false, false, curLevels, false)
       }
     },
 
@@ -379,7 +381,7 @@ export default {
 
     isUndeadRace(race)
     {
-      return ["GHOUL", "SKELETON"].indexOf(race) != -1
+      return ["GHOUL", "SKELETON", "LICH"].indexOf(race) != -1
     },
 
     prepareProdigyConfig()
@@ -453,7 +455,7 @@ export default {
 
       if (this.isUndeadRace(this.raceSelected)) {
         this.initializeOneTalentGroup("undead/" + this.raceSelected.toLowerCase(), 1, 0, true, true, false, false, [1, 0, 0, 0], false)
-      } else {
+      } else if(this.raceSelected != "CORNAC") {
         this.initializeOneTalentGroup("race/" + this.raceSelected.toLowerCase(), 1, 0, true, true, false, false, [1, 0, 0, 0], false)
       }
 
@@ -536,9 +538,16 @@ export default {
 
     async initializeOneTalentGroup(talentGroupID, mastery, index, unlocked, defaultUnlocked, enhanced, dirty, curLevels, isClass)
     {
-      console.log("start loading" + talentGroupID)
+      console.log("start loading: " + talentGroupID)
       this.loadingCount += 1
       let type = talentGroupID.split("/")[0]
+      //workaround for whitehoof / kruk yeti
+      if (talentGroupID == "race/whitehoof") {
+        talentGroupID="race/whitehooves"
+      } else if(talentGroupID == "race/kruk_yeti") {
+        talentGroupID="race/yeti"
+      }
+
       await import(`@/assets/data/${this.tomeVersion}/talents.${type}-${mastery}.json`).then((module)=>{
         // console.log(ctg)
         for (let i in module) {
@@ -611,11 +620,8 @@ export default {
 
     finishLoading()
     {
-      // console.log("=====Finish Loading")
-      // this.isReseting = false
-      // if (this.hasBuildURL()) {
-      //   this.deserialize_base64_remains()
-      // }
+      console.log("=====Finish Loading")
+      this.isReseting = false
     },
 
     serialize2base64() 
