@@ -79,6 +79,7 @@
         <MiscPanel 
           :pInscriptionSlots="this.inscriptionSlots" 
           @click-inscription-btn="unlockInscriptionSlot" 
+          @reset-inscription-btn="resetInscriptionSlot"
           @click-prodigy-btn="openCloseProdigyPanel"
           @click-escort-btn="addEscortTree"
         >
@@ -112,6 +113,10 @@
         <li>Race/Class Evolution Prodigies</li>
       </ol>
       <h3>ChangeLog</h3>
+      <h4>Oct 19,2022</h4>
+      <p>Performance: reduce js file size</p>
+      <p>Feature: add button to reset inscription slots</p>
+      <p>Bugfix: prevent add steamtech tree multiple times</p>
       <h4>Oct 18,2022</h4>
       <p>first release</p>
     </div>
@@ -196,11 +201,20 @@ export default {
       }
       let isSteam = treeSelected[1] == "steamtech"
       if (isSteam){
-        if (this.totalCategoryPoints <= 0) {
+        if (this.hasTalentGroup("steamtech/physics", Const.TALENTS_TYPES_GENERIC) && this.hasTalentGroup("steamtech/chemistry", Const.TALENTS_TYPES_GENERIC)) {
+          console.log("already have this talent group")
+          return
+        }
+        else if (this.totalCategoryPoints <= 0) {
           alert("Do not have category points to unlock steam talent trees")
           return
         } else {
           this.totalCategoryPoints -= 1
+        }
+      } else {
+        if (this.hasTalentGroup(treeSelected[1], Const.TALENTS_TYPES_GENERIC)) {
+          console.log("already have this talent group")
+          return
         }
       }
 
@@ -295,6 +309,18 @@ export default {
       }
     },
 
+    resetInscriptionSlot()
+    {
+      if (this.isEmpty()) {
+        return
+      }
+
+      if (this.inscriptionSlots > Const.INSCRIPTION_SLOT_BASE) {
+        this.totalCategoryPoints += this.inscriptionSlots - Const.INSCRIPTION_SLOT_BASE
+        this.inscriptionSlots = Const.INSCRIPTION_SLOT_BASE
+      }
+    },
+
     chooseProdigy(index1, index2)
     {
       let tmp = [index1, index2].join(Const.PRODIGY_KEY_DELIMITER)
@@ -377,6 +403,12 @@ export default {
       }, function(err) {
         console.error('Async: Could not copy text: ', err);
       });
+    },
+
+    hasTalentGroup(tg, treeType)
+    {
+      let tree = treeType == Const.TREE_TYPE_CLASS ? this.cTalentsTree : this.gTalentsTree
+      return Object.keys(tree).indexOf(tg) != -1
     },
 
     resetTalentGroup(tg, treeType)

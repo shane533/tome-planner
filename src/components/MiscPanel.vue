@@ -2,6 +2,7 @@
   <div class="misc-panel">
     <div class="inscription-prodigy-panel">
         <button class="btn" id="inscription-btn" @click="onClickInscriptionBtn">Inscription Slots:{{pInscriptionSlots}}</button>
+        <button class="btn" id="reset-btn" @click="onClickResetButton">X</button>
         <button class="btn" id="prodigy-btn" @click="onClickProdigyBtn">Prodigies:</button>
         <div class="prodigy-text">
           <slot></slot>
@@ -29,7 +30,7 @@
     props: {
       pInscriptionSlots: Number,
     },
-    emits: ['click-inscription-btn', 'click-prodigy-btn', 'click-escort-btn'],
+    emits: ['click-inscription-btn', 'reset-inscription-btn', 'click-prodigy-btn', 'click-escort-btn'],
 
     data() {
       return {
@@ -67,6 +68,11 @@
         this.$emit("click-inscription-btn")
       },
   
+      onClickResetButton()
+      {
+        this.$emit("reset-inscription-btn")
+      },
+
       onClickProdigyBtn()
       {
         this.$emit("click-prodigy-btn")
@@ -126,6 +132,10 @@
 
     .escort-title {
       text-align: left;
+    }
+
+    #reset-btn {
+      border-width: 1px;
     }
   
    
