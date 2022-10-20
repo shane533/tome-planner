@@ -60,7 +60,7 @@ export const Const = Object.freeze(
     },
 
     HIDDEN_RACES : [],
-    HIDDEN_CLASSES : ["NONE","EMPYREAL","ADVENTURER","WANDERER","TUTORIAL_ADVENTURER"],
+    HIDDEN_CLASSES : ["NONE","EMPYREAL","WANDERER","TUTORIAL_ADVENTURER"],
     CURSE_CLASSES : ["DOOMED", "CURSED"],
     CURSE_ARUA : "cursed/cursed-aura",
 

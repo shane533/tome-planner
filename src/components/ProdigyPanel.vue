@@ -15,11 +15,9 @@
                             </li>
                         </ol>
                     </div>
-                </div>
+                </div> 
                 <div class="prodigy-desc">
-                    <TalentDesc 
-                        :pData="this.selectingProdigy"
-                    />
+                    <TalentDesc :pData="this.selectingProdigy"/>
                 </div>
             </div>
         </div>

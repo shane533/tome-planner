@@ -109,14 +109,17 @@
       </ol>
       <h3>Features not implemented yet:</h3>
       <ol class="readme-list">
-        <li>Adventurer Class Support</li>
         <li>Race/Class Evolution Prodigies</li>
+        <li>Prodigies that may change talents like Worldly Knowledge</li>
       </ol>
       <h3>ChangeLog</h3>
+      <h4>Oct 20,2022</h4>
+      <p><b>Feature:</b> Adventurer Class added (not fully tested yet)</p>
+      <p><b>Bugfix:</b> add the missing cursed-aura talents to Cursed and Doomed</p>
       <h4>Oct 19,2022</h4>
-      <p>Performance: reduce js file size</p>
-      <p>Feature: add button to reset inscription slots</p>
-      <p>Bugfix: prevent add steamtech tree multiple times</p>
+      <p><b>Performance:</b> reduce js file size</p>
+      <p><b>Feature:</b> add button to reset inscription slots</p>
+      <p><b>Bugfix:</b> prevent add steamtech tree multiple times</p>
       <h4>Oct 18,2022</h4>
       <p>first release</p>
     </div>
@@ -486,6 +489,29 @@ export default {
       }
     },
 
+    async prepareAdventurerTalents()
+    {
+      this.totalCPoints += 3
+      this.totalGPoints += 1
+      this.totalCategoryPoints += 7
+
+      let cCount = 0
+      let gCount = 0
+      for (let c in this.classConfig) {
+        if (Const.HIDDEN_CLASSES.indexOf(c) == -1 && c != "POSSESSOR") {
+          for (let t in this.classConfig[c][Const.TALENTS_TYPES_CLASS]) {
+            this.initializeOneTalentGroup(t, 1, cCount, false, false, false, false, [0,0,0,0], true)
+            cCount += 1
+          }
+
+          for (let t in this.classConfig[c][Const.TALENTS_TYPES_GENERIC]) {
+            this.initializeOneTalentGroup(t, 1, gCount, false, false, false, false, [0,0,0,0], false)
+            gCount += 1
+          }
+        }
+      }
+    },
+
     async initializeWithRaceAndClass()
     {
       // base points
@@ -527,7 +553,11 @@ export default {
       }
 
       if (Object.keys(this.classConfig[this.classSelected]["talents_types_class"]).length == 0) {
-        this.finishLoading()
+        if (this.classSelected == "ADVENTURER") {
+          this.prepareAdventurerTalents()
+        } else {
+          this.finishLoading()
+        }
         return
       }
 
@@ -814,8 +844,8 @@ export default {
       totalCategoryPoints : 4,
       // total_prodigy_points : 2,
       inscriptionSlots: 3,
-      prodigyId1:"1.1",
-      prodigyId2:"1.3",
+      prodigyId1:"",
+      prodigyId2:"",
 
       stats : {
         "str" : {
