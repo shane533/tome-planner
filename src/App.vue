@@ -554,6 +554,10 @@ export default {
           this.initializeOneTalentGroup(ctg, mastery, i, unlocked, unlocked, false, false, classConfig["talents"], tree==Const.TALENTS_TYPES_CLASS)
         }
       }
+
+      if (Const.CURSE_CLASSES.indexOf(this.classSelected) != -1) {
+        this.initializeOneTalentGroup(Const.CURSE_ARUA, 1, Object.keys(this.gTalentsTree)+1, true, true, false, false, [0,0,0,0], false)
+      }
     },
 
     initializeWithBuildJson()
